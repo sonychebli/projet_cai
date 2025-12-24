@@ -281,7 +281,7 @@ export default function ReportPage() {
                   '--urgency-color': level.color
                 } as React.CSSProperties}
               >
-                {level.label}
+                <span>{level.label}</span>
               </button>
             ))}
           </div>
