@@ -3,15 +3,33 @@ import { AuthForm } from '@/components/auth/AuthForm';
 import { AuthBackground } from '@/components/auth/AuthBackground';
 import { Shield, AlertCircle, CheckCircle, MapPin } from 'lucide-react';
 import '@/styles/auth.css';
+import Link from 'next/link';
 
 export default function LoginPage() {
   return (
     <div className="auth-page">
       <AuthBackground />
-      
+
       <div className="auth-container">
         <div className="auth-content">
           <AuthForm mode="login" />
+
+          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            <Link
+              href="/report"
+              style={{
+                display: 'inline-block',
+                padding: '12px 24px',
+                background: '#667eea',
+                color: 'white',
+                textDecoration: 'none',
+                borderRadius: '8px',
+                fontWeight: '600'
+              }}
+            >
+              Signaler une infraction
+            </Link>
+          </div>
         </div>
 
         <div className="auth-sidebar">
@@ -92,6 +110,7 @@ export default function LoginPage() {
                 <span className="stat-label">Disponibilité</span>
               </div>
             </div>
+
           </div>
         </div>
       </div>
