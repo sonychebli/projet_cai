@@ -1,0 +1,79 @@
+/* Conteneur global */
+.suivi-page {
+  padding: 40px;
+  font-family: 'Inter', Arial, sans-serif;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+  color: #333;
+}
+
+/* Titre de la page */
+.suivi-page h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #1f2937;
+}
+
+/* Tableau moderne */
+.suivi-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.suivi-table th,
+.suivi-table td {
+  padding: 15px 20px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.suivi-table th {
+  background-color: #4f46e5; /* bleu foncé */
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Hover sur les lignes */
+.suivi-table tbody tr:hover {
+  background-color: #f0f4ff;
+  transition: background 0.2s ease-in-out;
+}
+
+/* Statuts colorés */
+.soumis {
+  color: #f59e0b; /* orange */
+  font-weight: 600;
+}
+
+.en-cours {
+  color: #3b82f6; /* bleu */
+  font-weight: 600;
+}
+
+.résolu {
+  color: #10b981; /* vert */
+  font-weight: 600;
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+  .suivi-page {
+    padding: 20px;
+  }
+
+  .suivi-page h1 {
+    font-size: 1.5rem;
+  }
+
+  .suivi-table th,
+  .suivi-table td {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+}

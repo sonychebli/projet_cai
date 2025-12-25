@@ -1,19 +1,28 @@
+'use client';
+
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { AuthBackground } from '@/components/auth/AuthBackground';
 import { Shield, CheckCircle, Users, Lock, Bell } from 'lucide-react';
 import '@/styles/auth.css';
 
 export default function RegisterPage() {
+  const router = useRouter();
+
+  // Cette fonction sera appelée après une inscription réussie
+  const handleRegisterSuccess = () => {
+    // Rediriger vers le dashboard
+    router.push('/dashboard');
+  };
+
   return (
     <div className="auth-page">
       <AuthBackground />
-      
       <div className="auth-container">
         <div className="auth-content">
-          <AuthForm mode="register" />
+          <AuthForm mode="register" onSuccess={handleRegisterSuccess} />
         </div>
-
         <div className="auth-sidebar">
           <div className="sidebar-content">
             <div className="sidebar-header">
@@ -23,7 +32,6 @@ export default function RegisterPage() {
                 communauté.
               </p>
             </div>
-
             <div className="benefits-list">
               <div className="benefit-item">
                 <CheckCircle size={20} />
@@ -50,7 +58,6 @@ export default function RegisterPage() {
                 <p>Consultez les statistiques de criminalité de votre secteur</p>
               </div>
             </div>
-
             <div className="security-features">
               <h3>
                 <Shield size={22} />
@@ -75,7 +82,6 @@ export default function RegisterPage() {
                 </div>
               </div>
             </div>
-
             <div className="trust-badge">
               <Shield size={32} />
               <div>

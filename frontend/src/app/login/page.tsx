@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { AuthBackground } from '@/components/auth/AuthBackground';
 import { Shield, AlertCircle, CheckCircle, MapPin } from 'lucide-react';
@@ -6,13 +9,21 @@ import '@/styles/auth.css';
 import Link from 'next/link';
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  // Cette fonction sera appelée après une connexion réussie
+  const handleLoginSuccess = () => {
+    // Rediriger vers la page welcom
+    router.push('/welcom');
+  };
+
   return (
     <div className="auth-page">
       <AuthBackground />
 
       <div className="auth-container">
         <div className="auth-content">
-          <AuthForm mode="login" />
+          <AuthForm mode="login" onSuccess={handleLoginSuccess} />
 
           <div style={{ marginTop: '20px', textAlign: 'center' }}>
             <Link
@@ -27,7 +38,7 @@ export default function LoginPage() {
                 fontWeight: '600'
               }}
             >
-              Signaler une infraction
+              Signaler anonymement
             </Link>
           </div>
         </div>
@@ -110,7 +121,6 @@ export default function LoginPage() {
                 <span className="stat-label">Disponibilité</span>
               </div>
             </div>
-
           </div>
         </div>
       </div>

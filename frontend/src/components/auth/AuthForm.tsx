@@ -35,6 +35,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 interface AuthFormProps {
   mode: 'login' | 'register';
+  onSuccess?: () => void;
 }
 
 const LoginFormContent: React.FC<{
@@ -232,7 +233,7 @@ const RegisterFormContent: React.FC<{
   );
 };
 
-export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
+export const AuthForm: React.FC<AuthFormProps> = ({ mode, onSuccess }) => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -243,9 +244,20 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
     setApiError('');
 
     try {
-      const response = await ApiClient.login(data);
-      console.log('Connexion réussie:', response);
-      router.push('/dashboard');
+      // SIMULATION - Commentez l'appel API pour tester
+      // const response = await ApiClient.login(data);
+      
+      // Simuler un délai
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log('Connexion réussie:', data);
+      
+      // Redirection
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push('/dashboard');
+      }
     } catch (error) {
       setApiError(error instanceof Error ? error.message : 'Une erreur est survenue');
     } finally {
@@ -258,9 +270,20 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
     setApiError('');
 
     try {
-      const response = await ApiClient.register(data);
-      console.log('Inscription réussie:', response);
-      router.push('/dashboard');
+      // SIMULATION - Commentez l'appel API pour tester
+      // const response = await ApiClient.register(data);
+      
+      // Simuler un délai
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log('Inscription réussie:', data);
+      
+      // Redirection
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push('/dashboard');
+      }
     } catch (error) {
       setApiError(error instanceof Error ? error.message : 'Une erreur est survenue');
     } finally {
@@ -313,12 +336,13 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
             {mode === 'login'
               ? "Vous n'avez pas de compte ?"
               : 'Vous avez déjà un compte ?'}
-            <a
+            {' '}
+            
               href={mode === 'login' ? '/register' : '/login'}
               className="link-primary"
-            >
+            
               {mode === 'login' ? 'Inscrivez-vous' : 'Connectez-vous'}
-            </a>
+            
           </p>
         </div>
       </div>
