@@ -1,27 +1,29 @@
 'use client';
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface User {
+  id: string;
   name: string;
+  email: string;
   role: 'admin' | 'police' | 'user';
+  token: string;
 }
 
 interface UserContextType {
-  user: User;
+  user: User | null;
+  setUser: (user: User | null) => void;
 }
 
-const UserContext = createContext<UserContextType>({
-  user: { name: 'Utilisateur Test', role: 'user' },
-});
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const useUserContext = () => useContext(UserContext);
+export const useUserContext = () => {
+  const context = useContext(UserContext);
+  if (!context) throw new Error('useUserContext must be used within a UserProvider');
+  return context;
+};
 
-export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const user: User = { name: 'Utilisateur Test', role: 'admin' }; // mock admin
+export const UserProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
 
-  return (
-    <UserContext.Provider value={{ user }}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 };

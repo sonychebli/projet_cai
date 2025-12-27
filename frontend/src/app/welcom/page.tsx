@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import '@/styles/welcom.css';
 import { FaUserCircle, FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 interface Notification {
   id: number;
@@ -15,7 +16,7 @@ interface Notification {
 
 export default function WelcomePage() {
   const { user } = useUserContext();
-
+  const router = useRouter();
   // Commentaires
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
@@ -34,6 +35,9 @@ export default function WelcomePage() {
     { id: 2, title: 'Agression signalée le 20/12', link: '/suivi' },
   ];
 
+  // Active Tab
+  const [activeTab, setActiveTab] = useState('Home');
+
   const handleCommentSubmit = () => {
     if (!comment) return;
     setSubmittedComments([...submittedComments, { text: comment, rating, user: user?.name || 'Anonyme' }]);
@@ -47,107 +51,144 @@ export default function WelcomePage() {
 
   return (
     <div className="welcome-page">
-      {/* MENU HORIZONTAL */}
+      {/* HEADER FIXE */}
       <header className="top-menu">
-        <h1 className="site-title">Plateforme de Signalement</h1>
-        <nav className="menu-nav">
-          <ul className="menu-list">
-            <li>
-              <Link href="/report" className="menu-link"><AlertCircle size={18} /> Faire un signalement</Link>
-            </li>
-            <li>
-              <Link href="/suivi" className="menu-link"><FileText size={18} /> Suivi</Link>
-            </li>
-
-            {/* RECHERCHE : champ qui apparaît au hover */}
-            <li
-              className="menu-link search-link"
-              onMouseEnter={() => setShowSearch(true)}
-              onMouseLeave={() => setShowSearch(false)}
-            >
-              <Search size={18} /> Recherche
-              {showSearch && (
-                <div className="search-popup">
-                  <input
-                    type="text"
-                    placeholder="Tapez votre recherche..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  <button onClick={() => alert(`Recherche pour : ${searchQuery}`)}>Rechercher</button>
-                </div>
-              )}
-            </li>
-
-            {/* NOTIFICATIONS : mini panneau */}
-            <li
-              className="menu-link notification-link"
-              onMouseEnter={() => setShowNotifications(true)}
-              onMouseLeave={() => setShowNotifications(false)}
-            >
-              <Bell size={18} /> Notifications
-              {notifications.length > 0 && <span className="notif-count">{notifications.length}</span>}
-              {showNotifications && (
-                <div className="notifications-popup">
-                  {notifications.length === 0 ? (
-                    <p>Aucune notification.</p>
-                  ) : (
-                    <ul>
-                      {notifications.map(n => (
-                        <li key={n.id}>
-                          <Link href={n.link}>{n.title}</Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )}
-            </li>
-
-            {/* Lien Admin uniquement pour les admins */}
-            {user.role === 'admin' && (
-              <li>
-                <Link href="/admin" className="menu-link">Dashboard Admin</Link>
-              </li>
-            )}
-          </ul>
-
-          {/* Profil + Déconnexion */}
-          <div className="profile-section">
-            <FaUserCircle size={28} color="white" />
-            <button className="logout-btn" onClick={handleLogout}>Déconnexion</button>
+        <div className="header-left">
+          <div className="logo-container">
+            <Image src="/logo.jfif" alt="SecuriCité Logo" width={50} height={50} />
           </div>
-        </nav>
+          <h1 className="site-title">SecuriCité</h1>
+        </div>
+        <div className="header-center">
+          <div className="search-bar">
+            <Search size={18} />
+            <input
+              type="text"
+              placeholder="Rechercher un signalement, une infraction..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && alert(`Recherche pour : ${searchQuery}`)}
+            />
+            <button onClick={() => alert(`Recherche pour : ${searchQuery}`)}>Rechercher</button>
+          </div>
+        </div>
+        <div className="profile-section">
+          <FaUserCircle size={28} color="white" />
+          <span style={{ color: 'white', marginRight: '10px' }}>{user?.name || 'Utilisateur'}</span>
+          <button className="logout-btn" onClick={handleLogout}>Déconnexion</button>
+        </div>
       </header>
 
-      {/* CONTENU PRINCIPAL */}
+      {/* NAV BAR - Navigation principale */}
+      <div className="nav-tabs">
+        <button
+          className={`tab-btn ${activeTab === 'Home' ? 'active' : ''}`}
+          onClick={() => setActiveTab('Home')}
+        >
+          Accueil
+        </button>
+        <button
+  className={`tab-btn ${activeTab === 'Signalement' ? 'active' : ''}`}
+  onClick={() => router.push('/report')} // Redirection vers le dossier /report
+>
+  <AlertCircle size={18} style={{ marginRight: '5px' }} />
+  Faire un signalement
+</button>
+        <button
+          className={`tab-btn ${activeTab === 'Suivi' ? 'active' : ''}`}
+          onClick={() => router.push('/suivi')}
+        >
+          <FileText size={18} style={{ marginRight: '5px' }} />
+          Suivi
+        </button>
+        <button
+          className={`tab-btn ${activeTab === 'Statistiques' ? 'active' : ''}`}
+          onClick={() => router.push('/statistic')}
+        >
+          Statistiques
+        </button>
+        <button
+          className={`tab-btn ${activeTab === 'Notifications' ? 'active' : ''}`}
+          onClick={() => setActiveTab('Notifications')}
+        >
+          <Bell size={18} style={{ marginRight: '5px' }} />
+          Notifications
+          {notifications.length > 0 && <span className="notif-count">{notifications.length}</span>}
+        </button>
+        
+      </div>
+
+      {/* CONTENU PRINCIPAL - Change selon l'onglet actif */}
       <main className="content">
-        {/* PHOTOS + ARTICLES */}
-        <section className="infractions">
-          <h2>Infractions courantes</h2>
-          <div className="infractions-grid">
-            <div className="infraction-card">
-              <Image src="/3.jpg" alt="Agression" width={400} height={250} />
-              <h3>Agression</h3>
-              <p>Les agressions physiques représentent une menace directe pour la sécurité des citoyens. Signalez rapidement pour une intervention efficace.</p>
-            </div>
-            <div className="infraction-card">
-              <Image src="/4.jpg" alt="Vol" width={400} height={250} />
-              <h3>Vol</h3>
-              <p>Le vol affecte les biens et la sécurité. Déclarer ces incidents permet d’identifier les zones à risque et prévenir la récidive.</p>
-            </div>
-            <div className="infraction-card">
-              <Image src="/1.jpg" alt="Trafic de drogue" width={400} height={250} />
-              <h3>Trafic de drogue</h3>
-              <p>Le trafic alimente l’insécurité et la criminalité organisée. Les signalements citoyens sont essentiels pour lutter contre ces réseaux.</p>
-            </div>
-            <div className="infraction-card">
-              <Image src="/2.jpg" alt="Cybercriminalité" width={400} height={250} />
-              <h3>Cybercriminalité</h3>
-              <p>Le piratage, les fraudes en ligne et le vol de données mettent vos informations personnelles en danger. Signalez ces incidents pour protéger la communauté.</p>
-            </div>
+        {activeTab === 'Home' && (
+          <>
+            <section className="infractions">
+              <h2>Infractions courantes</h2>
+              <div className="infractions-grid">
+                <div className="infraction-card">
+                  <Image src="/3.jpg" alt="Agression" width={400} height={250} />
+                  <h3>Agression</h3>
+                  <p>Les agressions physiques représentent une menace directe pour la sécurité des citoyens. Signalez rapidement pour une intervention efficace.</p>
+                </div>
+                <div className="infraction-card">
+                  <Image src="/4.jpg" alt="Vol" width={400} height={250} />
+                  <h3>Vol</h3>
+                  <p>Le vol affecte les biens et la sécurité. Déclarer ces incidents permet d'identifier les zones à risque et prévenir la récidive.</p>
+                </div>
+                <div className="infraction-card">
+                  <Image src="/1.jpg" alt="Trafic de drogue" width={400} height={250} />
+                  <h3>Trafic de drogue</h3>
+                  <p>Le trafic alimente l'insécurité et la criminalité organisée. Les signalements citoyens sont essentiels pour lutter contre ces réseaux.</p>
+                </div>
+                <div className="infraction-card">
+                  <Image src="/2.jpg" alt="Cybercriminalité" width={400} height={250} />
+                  <h3>Cybercriminalité</h3>
+                  <p>Le piratage, les fraudes en ligne et le vol de données mettent vos informations personnelles en danger. Signalez ces incidents pour protéger la communauté.</p>
+                </div>
+              </div>
+            </section>
+          </>
+        )}
+        
+        {activeTab === 'Signalement' && (
+          <div>
+            <h2>Faire un signalement</h2>
+            <p>Formulaire de signalement à venir...</p>
           </div>
-        </section>
+        )}
+        
+        {activeTab === 'Suivi' && (
+          <div>
+            <h2>Suivi de vos signalements</h2>
+            <p>Liste de vos signalements à venir...</p>
+          </div>
+        )}
+        
+        {activeTab === 'Statistiques' && (
+          <div>
+            <h2>Statistiques</h2>
+            <p>Graphiques et données statistiques à venir...</p>
+          </div>
+        )}
+
+        {activeTab === 'Notifications' && (
+          <div>
+            <h2>Notifications</h2>
+            {notifications.length === 0 ? (
+              <p>Aucune notification.</p>
+            ) : (
+              <ul>
+                {notifications.map(n => (
+                  <li key={n.id}>
+                    <strong>{n.title}</strong>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
+       
       </main>
 
       {/* FOOTER COMMENTAIRES + CONTACT */}

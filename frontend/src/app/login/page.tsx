@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { AuthBackground } from '@/components/auth/AuthBackground';
-import { Shield, AlertCircle, CheckCircle, MapPin } from 'lucide-react';
+import { Shield, AlertCircle, CheckCircle, MapPin, Lock } from 'lucide-react';
 import '@/styles/auth.css';
 import Link from 'next/link';
 
@@ -15,6 +15,11 @@ export default function LoginPage() {
   const handleLoginSuccess = () => {
     // Rediriger vers la page welcom
     router.push('/welcom');
+  };
+
+  // Fonction pour rediriger vers la page admin
+  const handleAdminLogin = () => {
+    router.push('/admin-login');
   };
 
   return (
@@ -35,11 +40,31 @@ export default function LoginPage() {
                 color: 'white',
                 textDecoration: 'none',
                 borderRadius: '8px',
-                fontWeight: '600'
+                fontWeight: '600',
+                marginRight: '10px'
               }}
             >
               Signaler anonymement
             </Link>
+            
+            <button
+              onClick={handleAdminLogin}
+              style={{
+                display: 'inline-block',
+                padding: '12px 24px',
+                background: 'transparent',
+                color: '#667eea',
+                textDecoration: 'none',
+                borderRadius: '8px',
+                fontWeight: '600',
+                border: '2px solid #667eea',
+                cursor: 'pointer',
+                marginTop: '10px'
+              }}
+            >
+              <Lock size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+              Login as administrator
+            </button>
           </div>
         </div>
 
