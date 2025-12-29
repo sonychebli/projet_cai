@@ -32,20 +32,20 @@ export default function LoginPage() {
 
           <div style={{ marginTop: '20px', textAlign: 'center' }}>
             <Link
-              href="/report"
-              style={{
-                display: 'inline-block',
-                padding: '12px 24px',
-                background: '#667eea',
-                color: 'white',
-                textDecoration: 'none',
-                borderRadius: '8px',
-                fontWeight: '600',
-                marginRight: '10px'
-              }}
-            >
-              Signaler anonymement
-            </Link>
+  href="/report-anynome"  // Changez de /report à /report-anynome
+  style={{
+    display: 'inline-block',
+    padding: '12px 24px',
+    background: '#667eea',
+    color: 'white',
+    textDecoration: 'none',
+    borderRadius: '8px',
+    fontWeight: '600',
+    marginRight: '10px'
+  }}
+>
+  Signaler anonymement
+</Link>
             
             <button
               onClick={handleAdminLogin}

@@ -7,7 +7,8 @@ import {
   Clock, 
   FileText, 
   Camera,
-  Send
+  Send,
+  CheckCircle
 } from 'lucide-react';
 
 interface ReportFormData {
@@ -22,7 +23,11 @@ interface ReportFormData {
   images: File[];
 }
 
-export default function ReportForm() {
+interface ReportFormProps {
+  isAnonymousMode?: boolean;
+}
+
+export default function ReportForm({ isAnonymousMode = false }: ReportFormProps) {
   const [formData, setFormData] = useState<ReportFormData>({
     crimeType: '',
     title: '',
@@ -31,12 +36,13 @@ export default function ReportForm() {
     date: '',
     time: '',
     urgency: 'medium',
-    isAnonymous: false,
+    isAnonymous: isAnonymousMode, // Force l'anonymat si mode anonyme
     images: []
   });
 
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [trackingNumber, setTrackingNumber] = useState<string | null>(null);
 
   const crimeTypes = [
     { value: 'theft', label: 'Vol' },
@@ -105,6 +111,13 @@ export default function ReportForm() {
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
+  const generateTrackingNumber = () => {
+    const prefix = 'REPORT';
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `${prefix}-${timestamp}-${random}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -119,11 +132,14 @@ export default function ReportForm() {
     try {
       // Ici, votre binôme ajoutera l'appel API
       console.log('Données du signalement:', formData);
+      console.log('Mode anonyme:', isAnonymousMode);
       
       // Simulation d'envoi
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      alert('Signalement soumis avec succès !');
+      // Générer un numéro de suivi
+      const tracking = generateTrackingNumber();
+      setTrackingNumber(tracking);
       
       // Réinitialiser le formulaire
       setFormData({
@@ -134,7 +150,7 @@ export default function ReportForm() {
         date: '',
         time: '',
         urgency: 'medium',
-        isAnonymous: false,
+        isAnonymous: isAnonymousMode,
         images: []
       });
       setImagePreviews([]);
@@ -146,6 +162,82 @@ export default function ReportForm() {
       setIsSubmitting(false);
     }
   };
+
+  // Affichage du message de succès avec numéro de suivi
+  if (trackingNumber) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '60px 20px',
+        textAlign: 'center'
+      }}>
+        <div style={{
+          background: '#4ade80',
+          borderRadius: '50%',
+          padding: '20px',
+          marginBottom: '20px'
+        }}>
+          <CheckCircle size={60} color="white" />
+        </div>
+        
+        <h2 style={{ fontSize: '32px', marginBottom: '10px', color: '#333' }}>
+          Signalement soumis avec succès !
+        </h2>
+        
+        <p style={{ fontSize: '16px', color: '#666', marginBottom: '30px', maxWidth: '600px' }}>
+          {isAnonymousMode 
+            ? "Votre signalement anonyme a été enregistré. Conservez précieusement ce numéro de suivi :"
+            : "Votre signalement a été enregistré. Voici votre numéro de suivi :"}
+        </p>
+        
+        <div style={{
+          background: '#f3f4f6',
+          border: '2px dashed #667eea',
+          borderRadius: '12px',
+          padding: '20px 40px',
+          marginBottom: '30px'
+        }}>
+          <p style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>
+            Numéro de suivi
+          </p>
+          <p style={{
+            fontSize: '28px',
+            fontWeight: 'bold',
+            color: '#667eea',
+            letterSpacing: '2px',
+            margin: 0
+          }}>
+            {trackingNumber}
+          </p>
+        </div>
+        
+        <button
+          onClick={() => {
+            setTrackingNumber(null);
+            if (isAnonymousMode) {
+              window.location.href = '/login';
+            }
+          }}
+          style={{
+            background: '#667eea',
+            color: 'white',
+            padding: '12px 32px',
+            borderRadius: '8px',
+            border: 'none',
+            fontSize: '16px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.3s'
+          }}
+        >
+          {isAnonymousMode ? 'Retour à l\'accueil' : 'Faire un autre signalement'}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="report-section">
@@ -324,23 +416,25 @@ export default function ReportForm() {
           </div>
         </div>
 
-        {/* Anonymat */}
-        <div className="form-section">
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              name="isAnonymous"
-              checked={formData.isAnonymous}
-              onChange={handleInputChange}
-            />
-            <span>Soumettre ce signalement de manière anonyme</span>
-          </label>
-          {formData.isAnonymous && (
-            <p className="info-message">
-              Votre identité ne sera pas divulguée. Vous recevrez un numéro de suivi pour consulter l'avancement.
-            </p>
-          )}
-        </div>
+        {/* Anonymat - Caché si mode anonyme forcé */}
+        {!isAnonymousMode && (
+          <div className="form-section">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                name="isAnonymous"
+                checked={formData.isAnonymous}
+                onChange={handleInputChange}
+              />
+              <span>Soumettre ce signalement de manière anonyme</span>
+            </label>
+            {formData.isAnonymous && (
+              <p className="info-message">
+                Votre identité ne sera pas divulguée. Vous recevrez un numéro de suivi pour consulter l'avancement.
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Bouton de soumission */}
         <div className="form-actions">
