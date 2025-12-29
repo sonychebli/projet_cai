@@ -1,5 +1,6 @@
-/* Conteneur global */
-.suivi-page {
+/* Conteneur global - fonctionne pour la page ET le composant */
+.suivi-page,
+.suivi-section {
   padding: 40px;
   font-family: 'Inter', Arial, sans-serif;
   background-color: #f5f7fa;
@@ -7,8 +8,15 @@
   color: #333;
 }
 
+/* Si c'est dans un composant (pas de full height) */
+.suivi-section {
+  min-height: auto;
+  border-radius: 12px;
+}
+
 /* Titre de la page */
-.suivi-page h1 {
+.suivi-page h1,
+.suivi-section h1 {
   font-size: 2rem;
   font-weight: 600;
   margin-bottom: 30px;
@@ -63,11 +71,13 @@
 
 /* Responsive mobile */
 @media (max-width: 768px) {
-  .suivi-page {
+  .suivi-page,
+  .suivi-section {
     padding: 20px;
   }
 
-  .suivi-page h1 {
+  .suivi-page h1,
+  .suivi-section h1 {
     font-size: 1.5rem;
   }
 

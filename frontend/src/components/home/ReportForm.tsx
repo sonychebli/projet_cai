@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { 
   AlertTriangle, 
   MapPin, 
@@ -8,10 +7,8 @@ import {
   Clock, 
   FileText, 
   Camera,
-  Send,
-  ArrowLeft
+  Send
 } from 'lucide-react';
-import '@/styles/report.css';
 
 interface ReportFormData {
   crimeType: string;
@@ -25,8 +22,7 @@ interface ReportFormData {
   images: File[];
 }
 
-export default function ReportPage() {
-  const router = useRouter();
+export default function ReportForm() {
   const [formData, setFormData] = useState<ReportFormData>({
     crimeType: '',
     title: '',
@@ -128,7 +124,21 @@ export default function ReportPage() {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       alert('Signalement soumis avec succès !');
-      router.push('/dashboard'); // ou '/my-reports'
+      
+      // Réinitialiser le formulaire
+      setFormData({
+        crimeType: '',
+        title: '',
+        description: '',
+        location: '',
+        date: '',
+        time: '',
+        urgency: 'medium',
+        isAnonymous: false,
+        images: []
+      });
+      setImagePreviews([]);
+      
     } catch (error) {
       console.error('Erreur:', error);
       alert('Une erreur est survenue. Veuillez réessayer.');
@@ -138,20 +148,8 @@ export default function ReportPage() {
   };
 
   return (
-    <div className="report-page">
-      <div className="report-header">
-        <button 
-          className="back-button"
-          onClick={() => router.back()}
-        >
-          <ArrowLeft size={20} />
-          Retour
-        </button>
-        <h1>Signaler une Infraction</h1>
-        <p>Remplissez le formulaire ci-dessous pour soumettre votre signalement</p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="report-form">
+    <div className="report-section">
+      <form onSubmit={handleSubmit} className="report-form-inline">
         {/* Type d'infraction */}
         <div className="form-section">
           <h2>
@@ -346,14 +344,6 @@ export default function ReportPage() {
 
         {/* Bouton de soumission */}
         <div className="form-actions">
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => router.back()}
-            disabled={isSubmitting}
-          >
-            Annuler
-          </button>
           <button
             type="submit"
             className="btn-primary"

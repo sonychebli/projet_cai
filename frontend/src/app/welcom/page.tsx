@@ -1,12 +1,15 @@
 'use client';
 import React, { useState } from 'react';
 import { useUserContext } from '@/context/UserContext';
-import { AlertCircle, FileText, Search, Bell } from 'lucide-react';
+import { AlertCircle, FileText, Search, Bell, BarChart3 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import '@/styles/welcom.css';
 import { FaUserCircle, FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
+import ReportForm from '@/components/home/ReportForm';
+import SuiviComponent from '@/components/home/FollowUp';
+import StatisticsComponent from '@/components/home/StatisticsDashboard.tsx';
 
 interface Notification {
   id: number;
@@ -88,23 +91,24 @@ export default function WelcomePage() {
           Accueil
         </button>
         <button
-  className={`tab-btn ${activeTab === 'Signalement' ? 'active' : ''}`}
-  onClick={() => router.push('/report')} // Redirection vers le dossier /report
->
-  <AlertCircle size={18} style={{ marginRight: '5px' }} />
-  Faire un signalement
-</button>
+          className={`tab-btn ${activeTab === 'Signalement' ? 'active' : ''}`}
+          onClick={() => setActiveTab('Signalement')}
+        >
+          <AlertCircle size={18} style={{ marginRight: '5px' }} />
+          Faire un signalement
+        </button>
         <button
           className={`tab-btn ${activeTab === 'Suivi' ? 'active' : ''}`}
-          onClick={() => router.push('/suivi')}
+          onClick={() => setActiveTab('Suivi')}
         >
           <FileText size={18} style={{ marginRight: '5px' }} />
           Suivi
         </button>
         <button
           className={`tab-btn ${activeTab === 'Statistiques' ? 'active' : ''}`}
-          onClick={() => router.push('/statistic')}
+          onClick={() => setActiveTab('Statistiques')}
         >
+          <BarChart3 size={18} style={{ marginRight: '5px' }} />
           Statistiques
         </button>
         <button
@@ -151,24 +155,15 @@ export default function WelcomePage() {
         )}
         
         {activeTab === 'Signalement' && (
-          <div>
-            <h2>Faire un signalement</h2>
-            <p>Formulaire de signalement à venir...</p>
-          </div>
+          <ReportForm />
         )}
         
         {activeTab === 'Suivi' && (
-          <div>
-            <h2>Suivi de vos signalements</h2>
-            <p>Liste de vos signalements à venir...</p>
-          </div>
+          <SuiviComponent />
         )}
         
         {activeTab === 'Statistiques' && (
-          <div>
-            <h2>Statistiques</h2>
-            <p>Graphiques et données statistiques à venir...</p>
-          </div>
+          <StatisticsComponent />
         )}
 
         {activeTab === 'Notifications' && (

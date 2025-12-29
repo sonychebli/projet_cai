@@ -37,7 +37,7 @@ const zoneData = [
   { zone: 'Zone Industrielle', signalements: 28, résolus: 18, taux: 64, tendance: 'stable' },
 ];
 
-export default function StatisticsPage() {
+export default function StatisticsComponent() {
   const { user } = useUserContext();
   const [timeRange, setTimeRange] = useState('6mois');
   const [isLoading, setIsLoading] = useState(false);
@@ -60,7 +60,7 @@ export default function StatisticsPage() {
   };
 
   return (
-    <div className="statistics-page">
+    <div className="statistics-section">
       {/* Header */}
       <header className="stats-header">
         <div className="header-content">
@@ -336,7 +336,7 @@ export default function StatisticsPage() {
         </div>
       </div>
 
-      {/* Footer de la page */}
+      {/* Footer de la section */}
       <footer className="stats-footer">
         <p>
           <Calendar size={16} />
