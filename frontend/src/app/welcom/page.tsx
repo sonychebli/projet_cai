@@ -10,12 +10,7 @@ import { useRouter } from 'next/navigation';
 import ReportForm from '@/components/home/ReportForm';
 import SuiviComponent from '@/components/home/FollowUp';
 import StatisticsComponent from '@/components/home/StatisticsDashboard.tsx';
-
-interface Notification {
-  id: number;
-  title: string;
-  link: string;
-}
+import NotificationsComponent from '@/components/home/notifications';
 
 export default function WelcomePage() {
   const { user } = useUserContext();
@@ -31,12 +26,6 @@ export default function WelcomePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
 
-  // Notifications
-  const [showNotifications, setShowNotifications] = useState(false);
-  const notifications: Notification[] = [
-    { id: 1, title: 'Signalement Vol de vélo traité', link: '/suivi' },
-    { id: 2, title: 'Agression signalée le 20/12', link: '/suivi' },
-  ];
 
   // Active Tab
   const [activeTab, setActiveTab] = useState('Home');
@@ -117,7 +106,7 @@ export default function WelcomePage() {
         >
           <Bell size={18} style={{ marginRight: '5px' }} />
           Notifications
-          {notifications.length > 0 && <span className="notif-count">{notifications.length}</span>}
+          {}
         </button>
         
       </div>
@@ -166,24 +155,9 @@ export default function WelcomePage() {
           <StatisticsComponent />
         )}
 
-        {activeTab === 'Notifications' && (
-          <div>
-            <h2>Notifications</h2>
-            {notifications.length === 0 ? (
-              <p>Aucune notification.</p>
-            ) : (
-              <ul>
-                {notifications.map(n => (
-                  <li key={n.id}>
-                    <strong>{n.title}</strong>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-
-       
+      {activeTab === 'Notifications' && (
+  <NotificationsComponent />
+)}
       </main>
 
       {/* FOOTER COMMENTAIRES + CONTACT */}

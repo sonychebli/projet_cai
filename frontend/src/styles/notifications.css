@@ -1,0 +1,160 @@
+:root {
+  --primary: #ff6b6b;
+  --secondary: #4ecdc4;
+  --accent: #ffe66d;
+  --dark: #2d3436;
+  --light: #f8f9fa;
+
+  --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --gradient-unique: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+/* ================= CONTAINER ================= */
+.notifications-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 30px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  position: relative;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.notifications-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 6px;
+  width: 100%;
+  background: var(--gradient-unique);
+  border-radius: 30px 30px 0 0;
+}
+
+/* ================= TITLE ================= */
+.notifications-section h1 {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, #2d3436 0%, #fa709a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ================= LIST ================= */
+.notifications-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ================= ITEM ================= */
+.notification-item {
+  padding: 20px 24px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gradient glow on hover */
+.notification-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-unique);
+  opacity: 0;
+  transition: opacity 0.4s;
+  z-index: 0;
+}
+
+.notification-item:hover::before {
+  opacity: 0.08;
+}
+
+.notification-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ================= READ / UNREAD ================= */
+.notification-item.unread {
+  background: linear-gradient(
+    135deg,
+    rgba(250, 112, 154, 0.12),
+    rgba(254, 225, 64, 0.12)
+  );
+  border-left: 6px solid #fa709a;
+}
+
+.notification-item.read {
+  background: #f8f9fa;
+  border-left: 6px solid #dee2e6;
+}
+
+/* ================= CONTENT ================= */
+.notification-message {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dark);
+  position: relative;
+  z-index: 1;
+}
+
+.notification-date {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6c757d;
+  position: relative;
+  z-index: 1;
+}
+
+/* ================= EMPTY STATE ================= */
+.notifications-section p {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #6c757d;
+  padding: 30px;
+}
+
+/* ================= ANIMATION ================= */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .notifications-section {
+    padding: 25px 20px;
+    border-radius: 20px;
+  }
+
+  .notifications-section h1 {
+    font-size: 26px;
+  }
+
+  .notification-item {
+    padding: 18px;
+  }
+}
