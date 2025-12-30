@@ -118,7 +118,7 @@ export default function AdminMenu() {
           <div className="logo-container">
             <Image src="/logo.jfif" alt="SecuriCité Logo" width={50} height={50} />
           </div>
-          <h1 className="site-title">SecuriCité</h1>
+          <h1 className="site-title">SecuriCité Admin</h1>
         </div>
 
         <nav>

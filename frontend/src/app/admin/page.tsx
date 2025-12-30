@@ -27,7 +27,7 @@ export default function AdminUtilisateursPage() {
     <div className={styles.adminDashboard}>
       {/* Menu Top */}
       <div className={styles.adminTopMenu}>
-        <div className={styles.logo}>SecuriCité </div>
+        <div className={styles.logo}>SecuriCité Admin</div>
         <nav>
           <ul>
             <li className={activeTab === 'plaintes' ? styles.active : ''} onClick={() => handleNavigation('plaintes', '/admin/plaintes')}>

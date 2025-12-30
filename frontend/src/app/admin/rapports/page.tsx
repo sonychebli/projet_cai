@@ -80,13 +80,18 @@ export default function AdminRapportsPage() {
 
 
       {/* Logo et titre */}
-            <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div className="logo-container">
-                <Image src="/logo.jfif" alt="SecuriCité Logo" width={50} height={50} />
-              </div>
-              <h1 className="site-title" style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>SecuriCité</h1>
-            </div>
-
+           <div 
+                   className="header-left" 
+                     style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+                     onClick={() => router.push('/admin/dashboard')}
+                   >
+                     <div className="logo-container">
+                       <Image src="/logo.jfif" alt="SecuriCité Logo" width={50} height={50} />
+                     </div>
+                     <h1 className="site-title" style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>
+                       SecuriCité Admin
+                     </h1>
+                   </div>
         <nav>
           <ul>
             <li className={activeTab === 'plaintes' ? styles.active : ''} onClick={() => handleNavigation('plaintes', '/admin/plaintes')}>
