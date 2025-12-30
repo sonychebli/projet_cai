@@ -4,6 +4,7 @@ import {
   LogOut, FileText, Users, BarChart3, MessageSquare,
   Search, Filter, Eye, Edit, Trash2, MapPin, Download
 } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 interface Complaint {
@@ -612,7 +613,16 @@ export default function AdminPlaintes() {
       `}</style>
 
       <div className="admin-top-menu">
-        <div className="logo">SecuriCité </div>
+        {/* Logo et titre */}
+                <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div className="logo-container">
+                    <Image src="/logo.jfif" alt="SecuriCité Logo" width={50} height={50} />
+                  </div>
+                  <h1 className="site-title" style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>SecuriCité</h1>
+                </div>
+
+
+        
         <nav>
           <ul>
             <li

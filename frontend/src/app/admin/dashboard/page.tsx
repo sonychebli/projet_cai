@@ -3,6 +3,7 @@
 import { LogOut, FileText, Users, BarChart3, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 export default function AdminMenu() {
   const router = useRouter();
@@ -10,6 +11,11 @@ export default function AdminMenu() {
 
   const handleLogout = () => {
     router.push('/admin-login');
+  };
+
+  const handleNavigation = (tab: string, route: string) => {
+    setActiveTab(tab);
+    router.push(route);
   };
 
   return (
@@ -28,9 +34,21 @@ export default function AdminMenu() {
           align-items: center;
         }
 
-        .logo {
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .logo-container {
+          display: flex;
+          align-items: center;
+        }
+
+        .site-title {
           font-size: 1.5rem;
           font-weight: bold;
+          margin: 0;
         }
 
         nav ul {
@@ -77,7 +95,6 @@ export default function AdminMenu() {
           background: #e53e3e;
         }
 
-        /* Nouveau style pour le contenu */
         .admin-content {
           padding: 40px 30px;
           text-align: center;
@@ -96,41 +113,49 @@ export default function AdminMenu() {
       `}</style>
 
       <div className="admin-top-menu">
-        <div className="logo">SecuriCité </div>
+        {/* Logo et titre */}
+        <div className="header-left">
+          <div className="logo-container">
+            <Image src="/logo.jfif" alt="SecuriCité Logo" width={50} height={50} />
+          </div>
+          <h1 className="site-title">SecuriCité</h1>
+        </div>
+
         <nav>
           <ul>
             <li
               className={activeTab === 'plaintes' ? 'active' : ''}
-              onClick={() => { setActiveTab('plaintes'); router.push('/admin/plaintes'); }}
+              onClick={() => handleNavigation('plaintes', '/admin/plaintes')}
             >
               <FileText size={18} /> Plaintes
             </li>
             <li
               className={activeTab === 'utilisateurs' ? 'active' : ''}
-              onClick={() => { setActiveTab('utilisateurs'); router.push('/admin/utilisateurs'); }}
+              onClick={() => handleNavigation('utilisateurs', '/admin/utilisateurs')}
             >
               <Users size={18} /> Utilisateurs
             </li>
             <li
               className={activeTab === 'rapports' ? 'active' : ''}
-              onClick={() => { setActiveTab('rapports'); router.push('/admin/rapports'); }}
+              onClick={() => handleNavigation('rapports', '/admin/rapports')}
             >
               <BarChart3 size={18} /> Rapports
             </li>
             <li
               className={activeTab === 'communication' ? 'active' : ''}
-              onClick={() => { setActiveTab('communication'); router.push('/admin/communication'); }}
+              onClick={() => handleNavigation('communication', '/admin/communication')}
             >
               <MessageSquare size={18} /> Communication
             </li>
           </ul>
         </nav>
+
         <button className="logout-btn" onClick={handleLogout}>
           <LogOut size={16} /> Déconnexion
         </button>
       </div>
 
-      {/* Contenu principal avec bienvenue */}
+      {/* Contenu principal */}
       <div className="admin-content">
         <h2>Bienvenue sur votre tableau de bord Admin</h2>
         <p>Gérez les plaintes, utilisateurs, rapports et communications depuis ici.</p>

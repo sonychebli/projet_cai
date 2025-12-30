@@ -6,6 +6,7 @@ import {
   TrendingUp, Clock, MapPin, AlertTriangle, Download, Calendar
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import styles from '../../../styles/admin-rapport.module.css';
 
 export default function AdminRapportsPage() {
@@ -75,7 +76,16 @@ export default function AdminRapportsPage() {
     <div className={styles.adminDashboard}>
       {/* Menu Top */}
       <div className={styles.adminTopMenu}>
-        <div className={styles.logo}>SecuriCité Admin</div>
+      
+
+
+      {/* Logo et titre */}
+            <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div className="logo-container">
+                <Image src="/logo.jfif" alt="SecuriCité Logo" width={50} height={50} />
+              </div>
+              <h1 className="site-title" style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>SecuriCité</h1>
+            </div>
 
         <nav>
           <ul>

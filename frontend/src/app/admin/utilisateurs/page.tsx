@@ -6,6 +6,7 @@ import {
   XCircle, Ban, Download, Calendar
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import '@/styles/admin-users.css';
 
 interface User {
@@ -125,7 +126,18 @@ export default function AdminUsers() {
   return (
     <div className="admin-dashboard">
       <div className="admin-top-menu">
-        <div className="logo">SecuriCité Admin</div>
+     
+  {/* Logo et titre */}
+        <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="logo-container">
+            <Image src="/logo.jfif" alt="SecuriCité Logo" width={50} height={50} />
+          </div>
+          <h1 className="site-title" style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>SecuriCité</h1>
+        </div>
+
+
+
+
         <nav>
           <ul>
             <li
