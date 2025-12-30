@@ -25,11 +25,11 @@ export default function AdminCommunication() {
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
 
   const [messages, setMessages] = useState<Message[]>([
-    { id: '#M001', complaintId: '#1247', user: 'Jean Djemai', email: 'jean.dj@email.com', content: 'Avez-vous des nouvelles sur mon dossier de vol de véhicule ?', date: '2024-12-26', status: 'pending' },
-    { id: '#M002', complaintId: '#1246', user: 'Marie Chebli', email: 'marie.cheb2004@email.com', content: 'Merci pour votre intervention rapide concernant le vandalisme.', date: '2024-12-25', status: 'answered' },
-    { id: '#M003', complaintId: '#1245', user: 'Pierre kacha', email: 'pierre.kacha02@email.com', content: 'Quand puis-je récupérer mon attestation de dépôt de plainte ?', date: '2024-12-24', status: 'pending' },
-    { id: '#M004', complaintId: '#1244', user: 'Sophie Khadir', email: 'sophie.khadir@email.com', content: 'Y a-t-il du nouveau concernant la tentative de cambriolage ?', date: '2024-12-23', status: 'pending' },
-    { id: '#M005', complaintId: '#1243', user: 'Luca Maouche', email: 'maouche.luc@email.com', content: 'Je voudrais contester la décision prise sur ma plainte.', date: '2024-12-22', status: 'answered' },
+    { id: '#M001', complaintId: '#1247', user: 'Jean Dupont', email: 'jean.dupont@email.com', content: 'Avez-vous des nouvelles sur mon dossier de vol de véhicule ?', date: '2024-12-26', status: 'pending' },
+    { id: '#M002', complaintId: '#1246', user: 'Marie Martin', email: 'marie.martin@email.com', content: 'Merci pour votre intervention rapide concernant le vandalisme.', date: '2024-12-25', status: 'answered' },
+    { id: '#M003', complaintId: '#1245', user: 'Pierre Durand', email: 'pierre.durand@email.com', content: 'Quand puis-je récupérer mon attestation de dépôt de plainte ?', date: '2024-12-24', status: 'pending' },
+    { id: '#M004', complaintId: '#1244', user: 'Sophie Bernard', email: 'sophie.bernard@email.com', content: 'Y a-t-il du nouveau concernant la tentative de cambriolage ?', date: '2024-12-23', status: 'pending' },
+    { id: '#M005', complaintId: '#1243', user: 'Luc Petit', email: 'luc.petit@email.com', content: 'Je voudrais contester la décision prise sur ma plainte.', date: '2024-12-22', status: 'answered' },
   ]);
 
   const handleLogout = () => router.push('/admin-login');
