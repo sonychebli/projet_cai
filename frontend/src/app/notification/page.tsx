@@ -11,7 +11,11 @@ export default function NotificationsPage() {
     'Statut mis à jour pour le signalement n°3.'
   ];
 
+
+
+  
   return (
+    
     <div className="notifications-page">
       <h1>Notifications</h1>
       <ul>

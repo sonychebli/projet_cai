@@ -5,6 +5,7 @@ import { ArrowLeft, Shield, Lock, Eye, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
+
 export default function ReportAnonymePage() {
   return (
     <div style={{
