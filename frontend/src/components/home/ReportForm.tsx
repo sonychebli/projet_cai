@@ -130,12 +130,46 @@ export default function ReportForm({ isAnonymousMode = false }: ReportFormProps)
     setIsSubmitting(true);
 
     try {
-      // Ici, votre binôme ajoutera l'appel API
+    
       console.log('Données du signalement:', formData);
       console.log('Mode anonyme:', isAnonymousMode);
       
       // Simulation d'envoi
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const payload = new FormData();
+
+payload.append('crimeType', formData.crimeType);
+payload.append('title', formData.title);
+payload.append('description', formData.description);
+payload.append('location', formData.location);
+payload.append('date', formData.date);
+payload.append('time', formData.time);
+payload.append('urgency', formData.urgency);
+payload.append('isAnonymous', String(formData.isAnonymous));
+
+formData.images.forEach((file, index) => {
+  payload.append('images', file); // backend handles array
+});
+
+const res = await fetch('http://localhost:5000/api/reports', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(formData),
+});
+
+
+if (!res.ok) {
+  throw new Error('Failed to submit report');
+}
+
+const data = await res.json();
+
+// if backend returns tracking number
+if (data.trackingNumber) {
+  setTrackingNumber(data.trackingNumber);
+} else {
+  setTrackingNumber(generateTrackingNumber());
+}
+
       
       // Générer un numéro de suivi
       const tracking = generateTrackingNumber();

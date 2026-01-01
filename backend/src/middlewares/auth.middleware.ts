@@ -3,9 +3,10 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/env';
 import User from '../models/User';
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   user?: any;
 }
+
 
 export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const token = req.headers.authorization?.split(' ')[1]; // Bearer token

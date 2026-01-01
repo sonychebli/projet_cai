@@ -6,7 +6,7 @@ export interface IReport extends Document {
   description: string;
   location: string;
   date: Date;
-  time: string;
+  time?: string;
   urgency: 'low' | 'medium' | 'high';
   isAnonymous: boolean;
   images: string[];
