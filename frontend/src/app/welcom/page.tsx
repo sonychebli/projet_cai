@@ -46,7 +46,12 @@ export default function WelcomePage() {
       {/* HEADER FIXE */}
       <header className="top-menu">
         <div className="header-left">
-          <div className="logo-container">
+          <div 
+          className="logo-container"
+           onClick={() => setActiveTab('Home')}
+           style={{ cursor: 'pointer' }}
+           >
+           
             <Image src="/logo.jfif" alt="SecuriCité Logo" width={50} height={50} />
           </div>
           <h1 className="site-title">SecuriCité</h1>
