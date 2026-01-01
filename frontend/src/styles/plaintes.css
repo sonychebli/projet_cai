@@ -1,0 +1,181 @@
+/* plaintes.css */
+
+.admin-dashboard {
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  color: #333;
+}
+
+/* Menu horizontal */
+.admin-top-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #667eea;
+  padding: 15px 30px;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-top-menu .logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.admin-top-menu nav ul {
+  display: flex;
+  list-style: none;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-top-menu nav ul li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.admin-top-menu nav ul li:hover,
+.admin-top-menu nav ul li.active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.logout-btn {
+  background: #f56565;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: background 0.2s ease-in-out;
+}
+
+.logout-btn:hover {
+  background: #e53e3e;
+}
+
+/* Contenu principal */
+.dashboard-content {
+  padding: 30px;
+}
+
+/* Tableau des plaintes */
+.data-table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.data-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+}
+
+.data-table tr:hover {
+  background: #f1f3f5;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.in-progress {
+  background: #cce5ff;
+  color: rgba(26, 26, 46, 0.2);
+}
+
+.status-badge.resolved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.action-btn.view {
+  background:rgba(26, 26, 46, 0.2);
+  color: white;
+}
+
+.action-btn.view:hover {
+  background: #5563d6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-top-menu {
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 20px;
+  }
+
+  .admin-top-menu nav ul {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .admin-top-menu nav ul li {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .logout-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .data-table {
+    min-width: 100%;
+    font-size: 0.9rem;
+  }
+}
+
+.logo-container {
+  background: white;
+  border-radius: 50%;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}

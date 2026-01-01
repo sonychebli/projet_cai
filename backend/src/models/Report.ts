@@ -5,6 +5,10 @@ export interface IReport extends Document {
   title: string;
   description: string;
   location: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
   date: Date;
   time?: string;
   urgency: 'low' | 'medium' | 'high';
@@ -13,6 +17,7 @@ export interface IReport extends Document {
   status: 'submitted' | 'in_review' | 'resolved';
   createdBy?: mongoose.Types.ObjectId;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 const reportSchema: Schema<IReport> = new Schema({
@@ -20,6 +25,10 @@ const reportSchema: Schema<IReport> = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
   location: { type: String, required: true },
+  coordinates: {
+    lat: { type: Number },
+    lng: { type: Number }
+  },
   date: { type: Date, required: true },
   time: { type: String },
   urgency: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },
@@ -27,7 +36,11 @@ const reportSchema: Schema<IReport> = new Schema({
   images: [{ type: String }],
   status: { type: String, enum: ['submitted', 'in_review', 'resolved'], default: 'submitted' },
   createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 });
+
+// Index pour recherche géospatiale
+reportSchema.index({ coordinates: '2dsphere' });
 
 export default mongoose.model<IReport>('Report', reportSchema);

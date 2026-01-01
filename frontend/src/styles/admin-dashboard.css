@@ -1,0 +1,81 @@
+.admin-dashboard {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  color: #333;
+}
+
+.admin-top-menu {
+  background: #667eea;
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.admin-top-menu nav ul {
+  display: flex;
+  list-style: none;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-top-menu nav ul li {
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s;
+}
+
+.admin-top-menu nav ul li:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.admin-top-menu nav ul li.active {
+  background: white;
+  color: #5563d6;
+  font-weight: bold;
+}
+
+.logout-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #f56565;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logout-btn:hover {
+  background: #e53e3e;
+}
+
+.dashboard-content {
+  padding: 30px;
+  flex: 1;
+}
+.logo-container {
+  background: white;
+  border-radius: 50%;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}

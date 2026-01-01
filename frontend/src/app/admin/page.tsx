@@ -1,43 +1,91 @@
 'use client';
-import { useEffect } from 'react';
+
+import React, { useState } from 'react';
+import { LogOut, Users, FileText, BarChart3, MessageSquare, UserCheck, UserX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useUserContext } from '@/context/UserContext';
-import Link from 'next/link';
+import styles from '../../../styles/admin-utilisateurs.module.css'; // CSS module
 
-export default function AdminDashboard() {
-  const { user } = useUserContext();
+export default function AdminUtilisateursPage() {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState('utilisateurs');
 
-  useEffect(() => {
-    if (!user || user.role !== 'admin') {
-      router.push('/welcome'); // redirige si pas admin
-    }
-  }, [user, router]);
+  const handleLogout = () => router.push('/admin-login');
 
-  if (!user || user.role !== 'admin') return <p>Redirection...</p>;
+  const handleNavigation = (tab: string, route: string) => {
+    setActiveTab(tab);
+    router.push(route);
+  };
+
+  // Exemple de données utilisateurs
+  const utilisateurs = [
+    { id: 1, nom: 'Alice Dupont', email: 'alice@example.com', role: 'Utilisateur', statut: 'Actif' },
+    { id: 2, nom: 'Bob Martin', email: 'bob@example.com', role: 'Modérateur', statut: 'Suspendu' },
+    { id: 3, nom: 'Charlie Rose', email: 'charlie@example.com', role: 'Utilisateur', statut: 'Actif' },
+  ];
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Tableau de bord Admin</h1>
-      <p>Bienvenue {user.name} ! Vous avez un accès complet aux fonctionnalités administratives.</p>
+    <div className={styles.adminDashboard}>
+      {/* Menu Top */}
+      <div className={styles.adminTopMenu}>
+        <div className={styles.logo}>SecuriCité Admin</div>
+        <nav>
+          <ul>
+            <li className={activeTab === 'plaintes' ? styles.active : ''} onClick={() => handleNavigation('plaintes', '/admin/plaintes')}>
+              <FileText size={18} /> Plaintes
+            </li>
+            <li className={activeTab === 'utilisateurs' ? styles.active : ''} onClick={() => handleNavigation('utilisateurs', '/admin/utilisateurs')}>
+              <Users size={18} /> Utilisateurs
+            </li>
+            <li className={activeTab === 'rapports' ? styles.active : ''} onClick={() => handleNavigation('rapports', '/admin/rapports')}>
+              <BarChart3 size={18} /> Rapports
+            </li>
+            <li className={activeTab === 'communication' ? styles.active : ''} onClick={() => handleNavigation('communication', '/admin/communication')}>
+              <MessageSquare size={18} /> Communication
+            </li>
+          </ul>
+        </nav>
+        <button className={styles.logoutBtn} onClick={handleLogout}>
+          <LogOut size={16} /> Déconnexion
+        </button>
+      </div>
 
-      <nav style={{ margin: '2rem 0' }}>
-        <Link href="/admin/users" style={{ marginRight: '1rem' }}>
-          Gestion des utilisateurs
-        </Link>
-        <Link href="/admin/reports">
-          Gestion des plaintes
-        </Link>
-      </nav>
+      {/* Contenu principal */}
+      <div className={styles.dashboardContent}>
+        <div className={styles.contentWrapper}>
+          <h2>Gestion des utilisateurs</h2>
+          <p className={styles.subtitle}>
+            Surveiller les comptes utilisateurs, modérer les signalements et gérer la confidentialité des données.
+          </p>
 
-      <section>
-        <h2>Statistiques rapides</h2>
-        <ul>
-          <li>Total utilisateurs : 1500</li>
-          <li>Total signalements : 12000</li>
-          <li>Signalements résolus : 9000</li>
-        </ul>
-      </section>
+          <div className={styles.dataTableContainer}>
+            <table className={styles.dataTable}>
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Rôle</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {utilisateurs.map(user => (
+                  <tr key={user.id}>
+                    <td>{user.nom}</td>
+                    <td>{user.email}</td>
+                    <td>{user.role}</td>
+                    <td>{user.statut}</td>
+                    <td>
+                      <button className={styles.btnAction}><UserCheck size={16} /> Activer</button>
+                      <button className={styles.btnAction}><UserX size={16} /> Suspendre</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

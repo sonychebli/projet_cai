@@ -13,7 +13,7 @@ export default function RegisterPage() {
   // Cette fonction sera appelée après une inscription réussie
   const handleRegisterSuccess = () => {
     // Rediriger vers le dashboard
-    router.push('/dashboard');
+    router.push('/welcom');
   };
 
   return (

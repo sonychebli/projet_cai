@@ -1,40 +1,48 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config/env';
 import User from '../models/User';
+import { JWT_SECRET } from '../config/env';
 
-export interface AuthRequest extends Request {
-  user?: any;
-}
-
-
-export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(' ')[1]; // Bearer token
-  if (!token) return res.status(401).json({ message: 'Accès refusé. Token manquant.' });
-
+// Middleware obligatoire (utilisateur doit être connecté)
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
-    const user = await User.findById(decoded.id);
-    if (!user) return res.status(401).json({ message: 'Utilisateur non trouvé' });
+    const token = req.header('Authorization')?.replace('Bearer ', '');
 
-    req.user = user;
+    if (!token) {
+      return res.status(401).json({ message: 'Token manquant, authentification requise' });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+    const user = await User.findById(decoded.id).select('-password');
+
+    if (!user) {
+      return res.status(401).json({ message: 'Utilisateur non trouvé' });
+    }
+
+    (req as any).user = user;
     next();
-  } catch (err) {
-    res.status(401).json({ message: 'Token invalide', error: err });
+  } catch (error) {
+    res.status(401).json({ message: 'Token invalide', error });
   }
 };
-// Middleware optionnel : si token présent, on vérifie, sinon on continue
-export const authOptionalMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return next(); // pas de token → continuer
 
-  const token = authHeader.split(' ')[1];
+// Middleware optionnel (permet signalements anonymes)
+export const authOptionalMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
-    const user = await User.findById(decoded.id);
-    if (user) req.user = user;
-  } catch (err) {
-    // token invalide → on ignore et continue quand même
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+
+    if (token) {
+      const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+      const user = await User.findById(decoded.id).select('-password');
+      
+      if (user) {
+        (req as any).user = user;
+      }
+    }
+
+    next();
+  } catch (error) {
+    // En cas d'erreur de token, on continue sans utilisateur (anonyme)
+    next();
   }
-  next();
 };

@@ -1,13 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 
-interface AuthRequest extends Request {
-  user?: any;
-}
+// Middleware pour vérifier le rôle admin
+export const adminMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  const user = (req as any).user;
 
-export const roleMiddleware = (roles: string[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!req.user) return res.status(403).json({ message: 'Accès refusé' });
-    if (!roles.includes(req.user.role)) return res.status(403).json({ message: 'Permission refusée' });
-    next();
-  };
+  if (!user) {
+    return res.status(401).json({ message: 'Authentification requise' });
+  }
+
+  if (user.role !== 'admin') {
+    return res.status(403).json({ message: 'Accès refusé. Rôle admin requis.' });
+  }
+
+  next();
 };

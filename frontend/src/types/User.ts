@@ -1,6 +1,7 @@
 export type User = {
   id: string;
   name: string;
-  email: string;
-  role: 'user' | 'admin';
+  role: 'admin' | 'user';
+  token: string;
+  email: string; // obligatoire
 };

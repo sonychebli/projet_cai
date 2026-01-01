@@ -1,0 +1,233 @@
+.adminDashboard {
+  min-height: 100vh;
+  background: #f9f9f9;
+  font-family: Arial, sans-serif;
+}
+
+.adminTopMenu {
+  background: #667eea;
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.adminTopMenu ul {
+  display: flex;
+  list-style: none;
+  gap: 12px;
+}
+
+.adminTopMenu li {
+  padding: 10px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.adminTopMenu li:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.active {
+  background: white;
+  color: #5563d6;
+  font-weight: bold;
+}
+
+.logoutBtn {
+  background: #f56565;
+  border: none;
+  padding: 8px 16px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+}
+
+.dashboardContent {
+  padding: 40px;
+}
+
+.contentWrapper {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.subtitle {
+  color: #555;
+  margin-bottom: 25px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.statCard {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 25px;
+  border-radius: 12px;
+  transition: transform 0.2s;
+}
+
+.statCard:hover {
+  transform: translateY(-6px);
+}
+
+.statValue {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.statChange {
+  display: flex;
+  gap: 6px;
+  opacity: 0.85;
+}
+
+.highRiskZones {
+  margin-top: 25px;
+  padding: 15px;
+  background: #f0f0f0;
+  border-radius: 10px;
+}
+
+.highRiskZones ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.highRiskZones li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btnExport {
+  background: #28a745;
+  color: white;
+}
+
+.btnFilter {
+  background: #667eea;
+  color: white;
+}
+
+.periodWrapper {
+  position: relative;
+}
+
+.datePicker {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.datePicker label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.datePicker input {
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.datePicker .btn {
+  padding: 6px 12px;
+  background-color: #667eea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+/* Recherche et filtrage */
+.searchFilter {
+  margin: 25px 0;
+  padding: 15px;
+  background: #f4f6ff;
+  border-radius: 10px;
+}
+
+.searchFilter h3 {
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.filterInputs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filterInputs input,
+.filterInputs select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+
+.filterInputs .btn {
+  background: #5563d6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filterInputs .btn:hover {
+  background: #4451b5;
+}
+

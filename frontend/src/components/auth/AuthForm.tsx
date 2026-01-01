@@ -9,6 +9,7 @@ import { Button } from '../ui/Button';
 import { SocialLogin } from './SocialLogin';
 import { ApiClient } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import { authService } from '@/services/api';
 
 const loginSchema = z.object({
   email: z.string().email('Email invalide'),
@@ -239,57 +240,60 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string>('');
 
-  const handleLoginSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
-    setApiError('');
+const handleLoginSubmit = async (data: LoginFormData) => {
+  setIsLoading(true);
+  setApiError('');
 
-    try {
-      // SIMULATION - Commentez l'appel API pour tester
-      // const response = await ApiClient.login(data);
-      
-      // Simuler un délai
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      console.log('Connexion réussie:', data);
-      
-      // Redirection
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        router.push('/dashboard');
-      }
-    } catch (error) {
-      setApiError(error instanceof Error ? error.message : 'Une erreur est survenue');
-    } finally {
-      setIsLoading(false);
+  try {
+    const response = await authService.login(data.email, data.password);
+
+    if (!response.token) {
+      setApiError('Email ou mot de passe incorrect');
+      return;
     }
-  };
 
-  const handleRegisterSubmit = async (data: RegisterFormData) => {
-    setIsLoading(true);
-    setApiError('');
-
-    try {
-      // SIMULATION - Commentez l'appel API pour tester
-      // const response = await ApiClient.register(data);
-      
-      // Simuler un délai
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      console.log('Inscription réussie:', data);
-      
-      // Redirection
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        router.push('/dashboard');
-      }
-    } catch (error) {
-      setApiError(error instanceof Error ? error.message : 'Une erreur est survenue');
-    } finally {
-      setIsLoading(false);
+    // Redirection selon rôle (si tu as stocké un rôle)
+    if (response.role === 'admin') {
+      router.push('/admin');
+    } else {
+      router.push('/welcom');
     }
-  };
+
+    if (onSuccess) onSuccess();
+  } catch (error) {
+    setApiError(error instanceof Error ? error.message : 'Une erreur est survenue');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+ const handleRegisterSubmit = async (data: RegisterFormData) => {
+  setIsLoading(true);
+  setApiError('');
+
+  try {
+    const response = await authService.register(
+      `${data.first_name} ${data.last_name}`,
+      data.email,
+      data.password
+    );
+
+    if (!response.userId) {
+      setApiError('Impossible de créer le compte');
+      return;
+    }
+
+    // Redirection vers login après inscription
+    router.push('/login');
+
+    if (onSuccess) onSuccess();
+  } catch (error) {
+    setApiError(error instanceof Error ? error.message : 'Une erreur est survenue');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="auth-form-container">
