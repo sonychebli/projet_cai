@@ -80,6 +80,14 @@ export const reportService = {
     return res.json();
   },
 
+  async getUserReports(userId: number) {
+    const res = await fetch(`${API_URL}/reports/user/${userId}`, {
+      headers: getHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to fetch user reports');
+    return res.json();
+  },
+
   async getReportById(id: string) {
     const res = await fetch(`${API_URL}/reports/${id}`, {
       headers: getHeaders(false),
@@ -111,7 +119,6 @@ export const reportService = {
     return res.json();
   },
 
-  // Commentaires
   async addComment(reportId: string, content: string) {
     const res = await fetch(`${API_URL}/reports/${reportId}/comments`, {
       method: 'POST',
@@ -124,6 +131,33 @@ export const reportService = {
   async getComments(reportId: string) {
     const res = await fetch(`${API_URL}/reports/${reportId}/comments`, {
       headers: getHeaders(false),
+    });
+    return res.json();
+  }
+};
+
+// ==================== NOTIFICATIONS ====================
+export const notificationService = {
+  async getUserNotifications(userId: number) {
+    const res = await fetch(`${API_URL}/notifications/user/${userId}`, {
+      headers: getHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to fetch notifications');
+    return res.json();
+  },
+
+  async markAsRead(notificationId: number) {
+    const res = await fetch(`${API_URL}/notifications/${notificationId}/read`, {
+      method: 'PATCH',
+      headers: getHeaders(),
+    });
+    return res.json();
+  },
+
+  async markAllAsRead(userId: number) {
+    const res = await fetch(`${API_URL}/notifications/user/${userId}/read-all`, {
+      method: 'PATCH',
+      headers: getHeaders(),
     });
     return res.json();
   }

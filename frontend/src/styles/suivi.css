@@ -87,3 +87,41 @@
     font-size: 0.85rem;
   }
 }
+/* Pour suivi.css */
+.loading-spinner, .error-message, .empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.error-message button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
+.status-badge.soumis {
+  background: #ffc107;
+  color: #000;
+}
+
+.status-badge.en-cours {
+  background: #17a2b8;
+  color: white;
+}
+
+.status-badge.résolu {
+  background: #28a745;
+  color: white;
+}

@@ -1,20 +1,25 @@
 'use client';
 import React, { useState } from 'react';
-import { useUserContext } from '@/context/UserContext';
 import { AlertCircle, FileText, Search, Bell, BarChart3 } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import '@/styles/welcom.css';
 import { FaUserCircle, FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
 import ReportForm from '@/components/home/ReportForm';
 import SuiviComponent from '@/components/home/FollowUp';
 import StatisticsComponent from '@/components/home/StatisticsDashboard.tsx';
 import NotificationsComponent from '@/components/home/notifications';
+import { useEffect } from 'react';
 
 export default function WelcomePage() {
-  const { user } = useUserContext();
-  const router = useRouter();
+   const [user, setUser] = useState<any>(null);
+
+useEffect(() => {
+  const storedUser = localStorage.getItem('user');
+  if (storedUser) {
+    setUser(JSON.parse(storedUser));
+  }
+}, []);
+
   // Commentaires
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
@@ -38,6 +43,8 @@ export default function WelcomePage() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('user');
+
     window.location.href = '/login';
   };
 

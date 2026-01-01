@@ -158,3 +158,60 @@
     padding: 18px;
   }
 }
+
+/* Pour notifications.css */
+.notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.notifications-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.unread-badge {
+  background: #dc3545;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.mark-all-read-btn {
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.mark-all-read-btn:hover {
+  background: #0056b3;
+}
+
+.notification-item {
+  cursor: pointer;
+  position: relative;
+  padding-right: 30px;
+}
+
+.unread-indicator {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #007bff;
+  font-size: 20px;
+}
+
+.notification-item.unread {
+  background: #e7f3ff;
+  border-left: 4px solid #007bff;
+}
