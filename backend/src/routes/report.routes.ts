@@ -18,6 +18,25 @@ const router = Router();
 router.post('/', authOptionalMiddleware, createReport); // Créer un signalement (auth ou anonyme)
 router.get('/', getReports); // Récupérer tous les signalements
 router.get('/statistics', getStatistics); // Statistiques
+
+// IMPORTANT: Cette route doit être AVANT '/:id' pour éviter les conflits
+router.get('/user/:userId', authMiddleware, async (req, res) => {
+  try {
+    const Report = (await import('../models/Report')).default;
+    
+    const reports = await Report.find({ createdBy: req.params.userId })
+      .populate('createdBy', 'name email')
+      .sort({ createdAt: -1 });
+    
+    res.json(reports);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Erreur lors de la récupération des signalements de l\'utilisateur',
+      error
+    });
+  }
+});
+
 router.get('/:id', getReportById); // Récupérer un signalement par ID
 
 // Routes protégées (utilisateur connecté)

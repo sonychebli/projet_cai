@@ -36,7 +36,7 @@ export default function ReportForm({ isAnonymousMode = false }: ReportFormProps)
     date: '',
     time: '',
     urgency: 'medium',
-    isAnonymous: isAnonymousMode, // Force l'anonymat si mode anonyme
+    isAnonymous: isAnonymousMode,
     images: []
   });
 
@@ -93,7 +93,6 @@ export default function ReportForm({ isAnonymousMode = false }: ReportFormProps)
       images: [...prev.images, ...files]
     }));
 
-    // Créer des aperçus
     files.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -121,7 +120,6 @@ export default function ReportForm({ isAnonymousMode = false }: ReportFormProps)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
     if (!formData.crimeType || !formData.description || !formData.location) {
       alert('Veuillez remplir tous les champs obligatoires');
       return;
@@ -130,49 +128,52 @@ export default function ReportForm({ isAnonymousMode = false }: ReportFormProps)
     setIsSubmitting(true);
 
     try {
-    
-      console.log('Données du signalement:', formData);
-      console.log('Mode anonyme:', isAnonymousMode);
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
       
-      // Simulation d'envoi
-      const payload = new FormData();
+      // Préparer les headers avec le token si l'utilisateur est connecté
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
 
-payload.append('crimeType', formData.crimeType);
-payload.append('title', formData.title);
-payload.append('description', formData.description);
-payload.append('location', formData.location);
-payload.append('date', formData.date);
-payload.append('time', formData.time);
-payload.append('urgency', formData.urgency);
-payload.append('isAnonymous', String(formData.isAnonymous));
+      // Ajouter le token si l'utilisateur est connecté (et pas en mode anonyme)
+      if (!isAnonymousMode) {
+        const token = localStorage.getItem('token');
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
 
-formData.images.forEach((file, index) => {
-  payload.append('images', file); // backend handles array
-});
+      // Préparer les données à envoyer
+      const reportPayload = {
+        crimeType: formData.crimeType,
+        title: formData.title,
+        description: formData.description,
+        location: formData.location,
+        date: formData.date,
+        time: formData.time,
+        urgency: formData.urgency,
+        isAnonymous: formData.isAnonymous,
+        // Note: Les images nécessitent FormData, à gérer séparément si nécessaire
+      };
 
-const res = await fetch('http://localhost:5000/api/reports', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(formData),
-});
+      console.log('Envoi du signalement:', reportPayload);
 
+      const res = await fetch(`${API_URL}/reports`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(reportPayload),
+      });
 
-if (!res.ok) {
-  throw new Error('Failed to submit report');
-}
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Erreur lors de l\'envoi du signalement');
+      }
 
-const data = await res.json();
+      const data = await res.json();
+      console.log('Réponse du serveur:', data);
 
-// if backend returns tracking number
-if (data.trackingNumber) {
-  setTrackingNumber(data.trackingNumber);
-} else {
-  setTrackingNumber(generateTrackingNumber());
-}
-
-      
-      // Générer un numéro de suivi
-      const tracking = generateTrackingNumber();
+      // Utiliser le trackingNumber du backend ou en générer un
+      const tracking = data.trackingNumber || data._id || generateTrackingNumber();
       setTrackingNumber(tracking);
       
       // Réinitialiser le formulaire
@@ -190,14 +191,14 @@ if (data.trackingNumber) {
       setImagePreviews([]);
       
     } catch (error) {
-      console.error('Erreur:', error);
-      alert('Une erreur est survenue. Veuillez réessayer.');
+      console.error('Erreur lors de l\'envoi:', error);
+      alert(error instanceof Error ? error.message : 'Une erreur est survenue. Veuillez réessayer.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Affichage du message de succès avec numéro de suivi
+  // Affichage du message de succès
   if (trackingNumber) {
     return (
       <div style={{
@@ -450,7 +451,7 @@ if (data.trackingNumber) {
           </div>
         </div>
 
-        {/* Anonymat - Caché si mode anonyme forcé */}
+        {/* Anonymat */}
         {!isAnonymousMode && (
           <div className="form-section">
             <label className="checkbox-label">

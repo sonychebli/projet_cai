@@ -9,7 +9,8 @@ export const createReport = async (req: Request, res: Response) => {
 
     const report = await Report.create({
       ...req.body,
-      createdBy: user ? user._id : null
+      createdBy: user ? user._id : null,
+      trackingNumber: generateTrackingNumber() // Ajoutez cette fonction
     });
 
     res.status(201).json(report);
@@ -182,3 +183,9 @@ export const getStatistics = async (_req: Request, res: Response) => {
     });
   }
 };
+// Générer un numéro de suivi unique
+function generateTrackingNumber(): string {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `RPT-${timestamp}-${random}`;
+}
