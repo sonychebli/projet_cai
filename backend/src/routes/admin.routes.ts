@@ -1,26 +1,20 @@
 import { Router } from 'express';
-import {
-  getAllUsers,
-  getUserById,
-  updateUserRole,
-  deleteUser,
-  getDashboardStats
-} from '../controllers/admin.controller';
+import AdminController from '../controllers/admin.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
-import { adminMiddleware } from '../middlewares/role.middleware';
+import { verifyAdmin } from '../middlewares/admin.middleware';
 
 const router = Router();
 
-// Toutes les routes admin nécessitent authentification + rôle admin
-router.use(authMiddleware, adminMiddleware);
+router.get('/dashboard', authMiddleware, verifyAdmin, AdminController.getDashboardStats);
+router.get('/users', authMiddleware, verifyAdmin, AdminController.getAllUsers);
+router.put('/users/:id/role', authMiddleware, verifyAdmin, AdminController.updateUserRole);
+router.delete('/users/:id', authMiddleware, verifyAdmin, AdminController.deleteUser);
 
-// Dashboard
-router.get('/dashboard', getDashboardStats);
+router.get('/reports', authMiddleware, verifyAdmin, AdminController.getAllReports);
+router.put('/reports/:id/status', authMiddleware, verifyAdmin, AdminController.updateReportStatus);
+router.delete('/reports/:id', authMiddleware, verifyAdmin, AdminController.deleteReport);
 
-// Gestion des utilisateurs
-router.get('/users', getAllUsers);
-router.get('/users/:id', getUserById);
-router.patch('/users/:id/role', updateUserRole);
-router.delete('/users/:id', deleteUser);
+router.get('/messages', authMiddleware, verifyAdmin, AdminController.getMessages);
+router.post('/messages/respond', authMiddleware, verifyAdmin, AdminController.sendResponse);
 
 export default router;
