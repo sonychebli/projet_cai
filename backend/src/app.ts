@@ -4,7 +4,7 @@ import reportRoutes from './routes/report.routes';
 import authRoutes from './routes/auth.routes';
 import adminRoutes from './routes/admin.routes';
 import { connectDB } from './config/db';
-
+import statsRoutes from './routes/stats.routes';
 // Connecter la base de données MongoDB
 connectDB();
 
@@ -18,7 +18,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use('/api/stats', statsRoutes);
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);
