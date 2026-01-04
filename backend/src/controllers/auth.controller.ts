@@ -1,3 +1,4 @@
+// backend/src/controllers/auth.controller.ts
 import { Request, Response } from 'express';
 import User from '../models/User';
 import bcrypt from 'bcryptjs';
@@ -8,16 +9,36 @@ import { JWT_SECRET } from '../config/env';
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
-    if (!name || !email || !password) return res.status(400).json({ message: 'Tous les champs sont requis' });
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Tous les champs sont requis' });
+    }
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: 'Utilisateur déjà existant' });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Utilisateur déjà existant' });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({ name, email, password: hashedPassword });
-    res.status(201).json({ message: 'Utilisateur créé', userId: user._id });
+    const user = await User.create({ 
+      name, 
+      email, 
+      password: hashedPassword,
+      role: 'user' // Par défaut
+    });
+
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.status(201).json({ 
+      message: 'Utilisateur créé', 
+      token,
+      userId: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role // ✅ AJOUTER LE ROLE
+    });
   } catch (err) {
+    console.error('Register error:', err);
     res.status(500).json({ message: 'Erreur serveur', error: err });
   }
 };
@@ -26,17 +47,32 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: 'Email et mot de passe requis' });
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email et mot de passe requis' });
+    }
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: 'Utilisateur non trouvé' });
+    if (!user) {
+      return res.status(400).json({ message: 'Utilisateur non trouvé' });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Mot de passe incorrect' });
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Mot de passe incorrect' });
+    }
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, userId: user._id, name: user.name, email: user.email });
+    
+    // ✅ CORRECTION IMPORTANTE: Ajouter le role dans la réponse
+    res.json({ 
+      token, 
+      userId: user._id, 
+      name: user.name, 
+      email: user.email,
+      role: user.role // ✅ AJOUTER LE ROLE ICI
+    });
   } catch (err) {
+    console.error('Login error:', err);
     res.status(500).json({ message: 'Erreur serveur', error: err });
   }
 };

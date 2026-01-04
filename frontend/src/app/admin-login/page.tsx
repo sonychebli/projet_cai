@@ -2,15 +2,13 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUserContext } from '@/context/UserContext';
+import { authService } from '@/services/api';
 import { Lock, LogIn, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import '@/styles/admin-login.css';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { setUser } = useUserContext();
-
-  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -27,34 +25,19 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authService.login(credentials.email, credentials.password);
 
-      const adminCredentials = [
-        { username: 'admin', password: 'admin123' },
-        { username: 'securite', password: 'securite2024' },
-        { username: 'police', password: 'police123' }
-      ];
-
-      const isValid = adminCredentials.some(
-        cred => cred.username === credentials.username && cred.password === credentials.password
-      );
-
-      if (isValid) {
-        setUser({
-          id: 'admin-' + Date.now(),
-          name: credentials.username,
-          email: `${credentials.username}@securicite.fr`,
-          role: 'admin',
-          token: 'admin-token-' + Math.random().toString(36).substr(2)
-        });
-
+      if (response.token && response.role === 'admin') {
         router.push('/admin/dashboard');
+      } else if (response.token && response.role !== 'admin') {
+        setError('Accès refusé. Vous devez être administrateur.');
+        authService.logout();
       } else {
-        setError('Identifiants administrateur incorrects');
+        setError(response.message || 'Identifiants incorrects');
       }
-    } catch (err) {
-      setError('Une erreur est survenue. Veuillez réessayer.');
-      console.error(err);
+    } catch (err: any) {
+      setError('Erreur de connexion. Vérifiez vos identifiants.');
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
@@ -67,7 +50,6 @@ export default function AdminLoginPage() {
       </div>
 
       <div className="admin-login-container">
-        {/* Formulaire de connexion admin uniquement */}
         <div className="admin-login-form-container">
           <div className="admin-login-form-wrapper">
             <div className="form-header">
@@ -77,17 +59,17 @@ export default function AdminLoginPage() {
 
             <form onSubmit={handleSubmit} className="admin-login-form">
               <div className="input-group">
-                <label htmlFor="username">
+                <label htmlFor="email">
                   <Lock size={16} />
-                  Identifiant Administrateur
+                  Email Administrateur
                 </label>
                 <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={credentials.username}
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={credentials.email}
                   onChange={handleInputChange}
-                  placeholder="admin"
+                  placeholder="admin@securicite.fr"
                   required
                   disabled={loading}
                 />
@@ -139,7 +121,7 @@ export default function AdminLoginPage() {
                 ) : (
                   <>
                     <LogIn size={20} />
-                    Se connecter en tant qu'admin
+                    Se connecter
                   </>
                 )}
               </button>

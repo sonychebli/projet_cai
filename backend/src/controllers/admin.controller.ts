@@ -208,8 +208,6 @@ async updateReportStatus(req: Request, res: Response) {
     res.status(500).json({ success: false, message: 'Erreur lors de l\'envoi de la réponse' });
   }
 }
-
-  
 }
 
 export default new AdminController();

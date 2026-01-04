@@ -1,75 +1,127 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LogOut, FileText, Users, BarChart3, MessageSquare,
   Send, CheckCircle, Clock, Eye
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { adminService, authService } from '@/services/api';
 import '@/styles/admin-communication.css';
 
 interface Message {
-  id: string;
-  complaintId: string;
-  user: string;
-  email: string;
+  _id: string;
+  report: {
+    _id: string;
+    crimeType: string;
+  };
+  user: {
+    name: string;
+    email: string;
+  };
   content: string;
-  date: string;
-  status: 'pending' | 'answered';
+  createdAt: string;
+  isAdminResponse?: boolean;
 }
 
 export default function AdminCommunication() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('communication');
+  const [loading, setLoading] = useState(true);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [responseMessage, setResponseMessage] = useState('');
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 0 });
 
-  const [messages, setMessages] = useState<Message[]>([
-    { id: '#M001', complaintId: '#1247', user: 'Jean Dupont', email: 'jean.dupont@email.com', content: 'Avez-vous des nouvelles sur mon dossier de vol de véhicule ?', date: '2024-12-26', status: 'pending' },
-    { id: '#M002', complaintId: '#1246', user: 'Marie Martin', email: 'marie.martin@email.com', content: 'Merci pour votre intervention rapide concernant le vandalisme.', date: '2024-12-25', status: 'answered' },
-    { id: '#M003', complaintId: '#1245', user: 'Pierre Durand', email: 'pierre.durand@email.com', content: 'Quand puis-je récupérer mon attestation de dépôt de plainte ?', date: '2024-12-24', status: 'pending' },
-    { id: '#M004', complaintId: '#1244', user: 'Sophie Bernard', email: 'sophie.bernard@email.com', content: 'Y a-t-il du nouveau concernant la tentative de cambriolage ?', date: '2024-12-23', status: 'pending' },
-    { id: '#M005', complaintId: '#1243', user: 'Luc Petit', email: 'luc.petit@email.com', content: 'Je voudrais contester la décision prise sur ma plainte.', date: '2024-12-22', status: 'answered' },
-  ]);
+  useEffect(() => {
+    const user = authService.getCurrentUser();
+    if (!user || user.role !== 'admin') {
+      router.push('/admin-login');
+      return;
+    }
+    fetchMessages();
+  }, [page, router]);
 
-  const handleLogout = () => router.push('/admin-login');
+  const fetchMessages = async () => {
+    try {
+      setLoading(true);
+      const response = await adminService.getMessages({ page, limit: 10 });
+      
+      if (response.success) {
+        setMessages(response.data.messages);
+        setPagination(response.data.pagination);
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      alert('Erreur lors du chargement des messages');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendResponse = async (messageId: string) => {
+    if (!responseMessage.trim()) {
+      alert('Veuillez écrire une réponse');
+      return;
+    }
+
+    try {
+      const message = messages.find(m => m._id === messageId);
+      if (!message) return;
+
+      const response = await adminService.sendResponse(message.report._id, responseMessage);
+      
+      if (response.success) {
+        alert('Réponse envoyée avec succès !');
+        setResponseMessage('');
+        setSelectedMessageId(null);
+        fetchMessages();
+      }
+    } catch (error) {
+      console.error('Error sending response:', error);
+      alert('Erreur lors de l\'envoi de la réponse');
+    }
+  };
+
+  const handleReplyClick = (messageId: string) => {
+    setSelectedMessageId(selectedMessageId === messageId ? null : messageId);
+    setResponseMessage('');
+  };
+
+  const handleViewComplaint = (reportId: string) => {
+    router.push(`/admin/plaintes?id=${reportId}`);
+  };
+
+  const handleLogout = () => {
+    authService.logout();
+    router.push('/admin-login');
+  };
 
   const handleNavigation = (tab: string, route: string) => {
     setActiveTab(tab);
     router.push(route);
   };
 
-  const handleSendResponse = (messageId: string) => {
-    if (responseMessage.trim()) {
-      setMessages(messages.map(m => m.id === messageId ? { ...m, status: 'answered' as const } : m));
-      setResponseMessage('');
-      setSelectedMessageId(null);
-      alert('Réponse envoyée avec succès !');
-    }
-  };
-
-  const handleReplyClick = (messageId: string) => {
-    setSelectedMessageId(messageId);
-    setResponseMessage('');
-  };
-
-  const handleViewComplaint = (complaintId: string) => router.push(`/admin/plaintes?id=${complaintId}`);
+  // Calculer les stats
+  const pendingMessages = messages.filter(m => !m.isAdminResponse).length;
+  const answeredMessages = messages.filter(m => m.isAdminResponse).length;
 
   return (
     <div className="admin-dashboard">
       <div className="admin-top-menu">
-       <div 
-                 className="header-left" 
-                 style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-                 onClick={() => router.push('/admin/dashboard')}
-               >
-                 <div className="logo-container">
-                   <Image src="/logo.jfif" alt="SecuriCité Logo" width={50} height={50} />
-                 </div>
-                 <h1 className="site-title" style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>
-                   SecuriCité Admin
-                 </h1>
-               </div>
+        <div 
+          className="header-left" 
+          style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+          onClick={() => router.push('/admin/dashboard')}
+        >
+          <div className="logo-container">
+            <Image src="/logo.jfif" alt="SecuriCité Logo" width={50} height={50} />
+          </div>
+          <h1 className="site-title" style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>
+            SecuriCité Admin
+          </h1>
+        </div>
 
         <nav>
           <ul>
@@ -96,98 +148,141 @@ export default function AdminCommunication() {
       <div className="dashboard-content">
         <div className="content-wrapper">
           <h2>Réponse & Communication</h2>
-          <p className="subtitle">Envoyer des réponses ou des questions aux utilisateurs concernant les cas signalés.</p>
+          <p className="subtitle">Gérez les messages et répondez aux utilisateurs</p>
           
           <div className="stats-grid">
             <div className="stat-card">
               <h3>Messages en Attente</h3>
-              <div className="stat-value">{messages.filter(m => m.status === 'pending').length}</div>
+              <div className="stat-value">{pendingMessages}</div>
               <div className="stat-change">À traiter prioritairement</div>
             </div>
             <div className="stat-card">
               <h3>Réponses Envoyées</h3>
-              <div className="stat-value">{messages.filter(m => m.status === 'answered').length}</div>
-              <div className="stat-change">Ce mois</div>
+              <div className="stat-value">{answeredMessages}</div>
+              <div className="stat-change">Total</div>
             </div>
             <div className="stat-card">
-              <h3>Temps de Réponse Moyen</h3>
-              <div className="stat-value">2.3h</div>
+              <h3>Messages Total</h3>
+              <div className="stat-value">{pagination.total}</div>
               <div className="stat-change">
-                <Clock size={16} /> Excellent
+                <Clock size={16} /> Tous les messages
               </div>
             </div>
             <div className="stat-card">
-              <h3>Taux de Satisfaction</h3>
-              <div className="stat-value">92%</div>
+              <h3>Taux de Réponse</h3>
+              <div className="stat-value">
+                {pagination.total > 0 ? Math.round((answeredMessages / pagination.total) * 100) : 0}%
+              </div>
               <div className="stat-change">
-                <CheckCircle size={16} /> +3% vs mois dernier
+                <CheckCircle size={16} /> Performance
               </div>
             </div>
           </div>
 
-          <div className="message-list">
-            {messages.map(message => (
-              <div key={message.id} className="message-card">
-                <div className="message-header">
-                  <div className="message-user-info">
-                    <div className="message-user">{message.user}</div>
-                    <div className="message-email">{message.email}</div>
-                    <div className="message-complaint">Concernant la plainte: <strong>{message.complaintId}</strong></div>
-                  </div>
-                  <div className="message-meta">
-                    <div className="message-date">
-                      {new Date(message.date).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })}
-                    </div>
-                    <span className={`status-badge ${message.status === 'pending' ? 'pending' : 'resolved'}`}>
-                      {message.status === 'pending' ? 'En attente' : 'Répondu'}
-                    </span>
-                  </div>
-                </div>
-                <div className="message-content">
-                  <strong>Message:</strong><br />{message.content}
-                </div>
-
-                {message.status === 'pending' && (
-                  <>
-                    <div className="message-actions">
-                      <button className="btn btn-reply" onClick={() => handleReplyClick(message.id)}>
-                        <MessageSquare size={16} /> Répondre
-                      </button>
-                      <button className="btn btn-view" onClick={() => handleViewComplaint(message.complaintId)}>
-                        <Eye size={16} /> Voir la plainte
-                      </button>
-                    </div>
-                    {selectedMessageId === message.id && (
-                      <div className="response-form">
-                        <label htmlFor={`response-${message.id}`}>Votre réponse</label>
-                        <textarea
-                          id={`response-${message.id}`}
-                          className="response-textarea"
-                          placeholder="Écrivez votre réponse ici..."
-                          value={responseMessage}
-                          onChange={(e) => setResponseMessage(e.target.value)}
-                        />
-                        <div className="response-actions">
-                          <button className="btn btn-send" onClick={() => handleSendResponse(message.id)} disabled={!responseMessage.trim()}>
-                            <Send size={16} /> Envoyer la réponse
-                          </button>
-                          <button className="btn btn-cancel" onClick={() => { setSelectedMessageId(null); setResponseMessage(''); }}>
-                            Annuler
-                          </button>
+          {loading ? (
+            <p>Chargement...</p>
+          ) : (
+            <>
+              <div className="message-list">
+                {messages.map(message => (
+                  <div key={message._id} className="message-card">
+                    <div className="message-header">
+                      <div className="message-user-info">
+                        <div className="message-user">{message.user.name}</div>
+                        <div className="message-email">{message.user.email}</div>
+                        <div className="message-complaint">
+                          Concernant: <strong>{message.report.crimeType}</strong>
                         </div>
                       </div>
-                    )}
-                  </>
-                )}
+                      <div className="message-meta">
+                        <div className="message-date">
+                          {new Date(message.createdAt).toLocaleDateString('fr-FR', { 
+                            day: 'numeric', 
+                            month: 'long', 
+                            year: 'numeric' 
+                          })}
+                        </div>
+                        <span className={`status-badge ${message.isAdminResponse ? 'resolved' : 'pending'}`}>
+                          {message.isAdminResponse ? 'Réponse admin' : 'Message utilisateur'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="message-content">
+                      <strong>Message:</strong><br />{message.content}
+                    </div>
 
-                {message.status === 'answered' && (
-                  <div className="answered-badge">
-                    <CheckCircle size={16} /> <span>Réponse envoyée avec succès</span>
+                    {!message.isAdminResponse && (
+                      <>
+                        <div className="message-actions">
+                          <button className="btn btn-reply" onClick={() => handleReplyClick(message._id)}>
+                            <MessageSquare size={16} /> Répondre
+                          </button>
+                          <button className="btn btn-view" onClick={() => handleViewComplaint(message.report._id)}>
+                            <Eye size={16} /> Voir la plainte
+                          </button>
+                        </div>
+                        {selectedMessageId === message._id && (
+                          <div className="response-form">
+                            <label htmlFor={`response-${message._id}`}>Votre réponse</label>
+                            <textarea
+                              id={`response-${message._id}`}
+                              className="response-textarea"
+                              placeholder="Écrivez votre réponse ici..."
+                              value={responseMessage}
+                              onChange={(e) => setResponseMessage(e.target.value)}
+                            />
+                            <div className="response-actions">
+                              <button 
+                                className="btn btn-send" 
+                                onClick={() => handleSendResponse(message._id)} 
+                                disabled={!responseMessage.trim()}
+                              >
+                                <Send size={16} /> Envoyer la réponse
+                              </button>
+                              <button 
+                                className="btn btn-cancel" 
+                                onClick={() => { setSelectedMessageId(null); setResponseMessage(''); }}
+                              >
+                                Annuler
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {message.isAdminResponse && (
+                      <div className="answered-badge">
+                        <CheckCircle size={16} /> <span>Réponse de l'administration</span>
+                      </div>
+                    )}
                   </div>
-                )}
+                ))}
               </div>
-            ))}
-          </div>
+
+              <div className="pagination" style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+                <button
+                  className="page-btn"
+                  disabled={page === 1}
+                  onClick={() => setPage(p => p - 1)}
+                  style={{ padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  Précédent
+                </button>
+                <span style={{ padding: '8px 12px', background: '#667eea', color: 'white', borderRadius: '4px' }}>
+                  Page {page} / {pagination.totalPages || 1}
+                </span>
+                <button
+                  className="page-btn"
+                  disabled={page >= (pagination.totalPages || 1)}
+                  onClick={() => setPage(p => p + 1)}
+                  style={{ padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  Suivant
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
