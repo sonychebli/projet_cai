@@ -7,7 +7,9 @@ import {
   deleteReport,
   addComment,
   getComments,
-  getStatistics
+  getStatistics,
+  getReportsByLocation,
+  getGeographicStats
 } from '../controllers/report.controller';
 import { authMiddleware, authOptionalMiddleware } from '../middlewares/auth.middleware';
 import { adminMiddleware } from '../middlewares/role.middleware';
@@ -17,9 +19,13 @@ const router = Router();
 // Routes publiques / semi-publiques
 router.post('/', authOptionalMiddleware, createReport); // Créer un signalement (auth ou anonyme)
 router.get('/', getReports); // Récupérer tous les signalements
-router.get('/statistics', getStatistics); // Statistiques
+router.get('/statistics', getStatistics); // Statistiques générales
 
-// IMPORTANT: Cette route doit être AVANT '/:id' pour éviter les conflits
+// 🗺️ Routes de géolocalisation
+router.get('/location', getReportsByLocation); // Signalements par zone géographique
+router.get('/geographic-stats', getGeographicStats); // Statistiques géographiques (heatmap)
+
+// Route utilisateur spécifique - DOIT être AVANT '/:id'
 router.get('/user/:userId', authMiddleware, async (req, res) => {
   try {
     const Report = (await import('../models/Report')).default;

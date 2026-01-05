@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Report from '../models/Report';
 import Comment from '../models/Comment';
 
-// Créer un signalement
+// Créer un signalement avec géolocalisation
 export const createReport = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
@@ -10,7 +10,7 @@ export const createReport = async (req: Request, res: Response) => {
     const report = await Report.create({
       ...req.body,
       createdBy: user ? user._id : null,
-      trackingNumber: generateTrackingNumber() // Ajoutez cette fonction
+      trackingNumber: generateTrackingNumber()
     });
 
     res.status(201).json(report);
@@ -51,6 +51,86 @@ export const getReportById = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({
       message: 'Erreur lors de la récupération du signalement',
+      error
+    });
+  }
+};
+
+// 🗺️ Récupérer les signalements dans une zone géographique
+export const getReportsByLocation = async (req: Request, res: Response) => {
+  try {
+    const { lat, lng, radius = 5000 } = req.query; // radius en mètres (défaut 5km)
+
+    if (!lat || !lng) {
+      return res.status(400).json({ 
+        message: 'Les coordonnées (lat, lng) sont requises' 
+      });
+    }
+
+    const reports = await Report.find({
+      coordinates: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [parseFloat(lng as string), parseFloat(lat as string)]
+          },
+          $maxDistance: parseInt(radius as string)
+        }
+      }
+    })
+    .populate('createdBy', 'name email')
+    .limit(100);
+
+    res.json(reports);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Erreur lors de la récupération des signalements par localisation',
+      error
+    });
+  }
+};
+
+// 🗺️ Statistiques géographiques (heatmap data)
+export const getGeographicStats = async (_req: Request, res: Response) => {
+  try {
+    const reports = await Report.find({ 
+      coordinates: { $exists: true, $ne: null } 
+    }).select('coordinates crimeType urgency status');
+
+    // Grouper par zone (grid de 0.01 degrés ~1km)
+    const heatmapData = reports.reduce((acc: any, report: any) => {
+      if (!report.coordinates) return acc;
+      
+      const gridLat = Math.floor(report.coordinates.lat / 0.01) * 0.01;
+      const gridLng = Math.floor(report.coordinates.lng / 0.01) * 0.01;
+      const key = `${gridLat},${gridLng}`;
+      
+      if (!acc[key]) {
+        acc[key] = {
+          lat: gridLat,
+          lng: gridLng,
+          count: 0,
+          urgencyHigh: 0,
+          crimeTypes: {}
+        };
+      }
+      
+      acc[key].count++;
+      if (report.urgency === 'high') acc[key].urgencyHigh++;
+      
+      acc[key].crimeTypes[report.crimeType] = 
+        (acc[key].crimeTypes[report.crimeType] || 0) + 1;
+      
+      return acc;
+    }, {});
+
+    res.json({
+      totalReportsWithLocation: reports.length,
+      heatmapData: Object.values(heatmapData)
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Erreur lors de la récupération des statistiques géographiques',
       error
     });
   }
@@ -167,6 +247,11 @@ export const getStatistics = async (_req: Request, res: Response) => {
       createdAt: { $gte: thirtyDaysAgo }
     });
 
+    // 🗺️ Statistiques géolocalisation
+    const reportsWithLocation = await Report.countDocuments({
+      coordinates: { $exists: true, $ne: null }
+    });
+
     res.json({
       total: totalReports,
       submitted: submittedReports,
@@ -174,7 +259,8 @@ export const getStatistics = async (_req: Request, res: Response) => {
       resolved: resolvedReports,
       crimeTypes,
       urgencyStats,
-      recentReports
+      recentReports,
+      reportsWithLocation // Nouveau champ
     });
   } catch (error) {
     res.status(500).json({
@@ -183,6 +269,7 @@ export const getStatistics = async (_req: Request, res: Response) => {
     });
   }
 };
+
 // Générer un numéro de suivi unique
 function generateTrackingNumber(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
