@@ -212,6 +212,7 @@
 
 .form-group {
   margin-bottom: 22px;
+  width: 100%;
 }
 
 .form-label {
@@ -226,6 +227,8 @@
 
 .input-wrapper {
   position: relative;
+  width: 100%;
+  display: block;
 }
 
 .form-input {
@@ -238,6 +241,7 @@
   background: #f8fafc;
   transition: all 0.2s ease;
   font-family: inherit;
+  box-sizing: border-box;
 }
 
 .form-input:focus {
@@ -258,6 +262,8 @@
 
 .password-wrapper {
   position: relative;
+  width: 100%;
+  display: block;
 }
 
 .password-wrapper .form-input {
@@ -719,28 +725,4 @@
     grid-template-columns: 1fr;
     gap: 16px;
   }
-
-  /* Footer du formulaire */
-.form-footer {
-  margin-top: 24px;
-  text-align: center;
-}
-
-.form-footer p {
-  font-size: 14px;
-  color: #636e72;
-}
-
-.link-primary {
-  color: #667eea;
-  font-weight: 600;
-  text-decoration: none;
-  margin-left: 6px;
-  transition: color 0.3s;
-}
-
-.link-primary:hover {
-  color: #764ba2;
-  text-decoration: underline;
-}
 }

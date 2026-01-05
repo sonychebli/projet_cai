@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import Link from 'next/link';
 import { Mail, Lock, User, Eye, EyeOff, Shield, AlertCircle } from 'lucide-react';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
@@ -240,60 +241,59 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string>('');
 
-const handleLoginSubmit = async (data: LoginFormData) => {
-  setIsLoading(true);
-  setApiError('');
+  const handleLoginSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
+    setApiError('');
 
-  try {
-    const response = await authService.login(data.email, data.password);
+    try {
+      const response = await authService.login(data.email, data.password);
 
-    if (!response.token) {
-      setApiError('Email ou mot de passe incorrect');
-      return;
+      if (!response.token) {
+        setApiError('Email ou mot de passe incorrect');
+        return;
+      }
+
+      // Redirection selon rôle (si tu as stocké un rôle)
+      if (response.role === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/welcom');
+      }
+
+      if (onSuccess) onSuccess();
+    } catch (error) {
+      setApiError(error instanceof Error ? error.message : 'Une erreur est survenue');
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    // Redirection selon rôle (si tu as stocké un rôle)
-    if (response.role === 'admin') {
-      router.push('/admin');
-    } else {
-      router.push('/welcom');
+  const handleRegisterSubmit = async (data: RegisterFormData) => {
+    setIsLoading(true);
+    setApiError('');
+
+    try {
+      const response = await authService.register(
+        `${data.first_name} ${data.last_name}`,
+        data.email,
+        data.password
+      );
+
+      if (!response.userId) {
+        setApiError('Impossible de créer le compte');
+        return;
+      }
+
+      // Redirection vers login après inscription
+      router.push('/login');
+
+      if (onSuccess) onSuccess();
+    } catch (error) {
+      setApiError(error instanceof Error ? error.message : 'Une erreur est survenue');
+    } finally {
+      setIsLoading(false);
     }
-
-    if (onSuccess) onSuccess();
-  } catch (error) {
-    setApiError(error instanceof Error ? error.message : 'Une erreur est survenue');
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-
- const handleRegisterSubmit = async (data: RegisterFormData) => {
-  setIsLoading(true);
-  setApiError('');
-
-  try {
-    const response = await authService.register(
-      `${data.first_name} ${data.last_name}`,
-      data.email,
-      data.password
-    );
-
-    if (!response.userId) {
-      setApiError('Impossible de créer le compte');
-      return;
-    }
-
-    // Redirection vers login après inscription
-    router.push('/login');
-
-    if (onSuccess) onSuccess();
-  } catch (error) {
-    setApiError(error instanceof Error ? error.message : 'Une erreur est survenue');
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   return (
     <div className="auth-form-container">
@@ -340,13 +340,9 @@ const handleLoginSubmit = async (data: LoginFormData) => {
             {mode === 'login'
               ? "Vous n'avez pas de compte ?"
               : 'Vous avez déjà un compte ?'}
-            {' '}
-            
-              href={mode === 'login' ? '/register' : '/login'}
-              className="link-primary"
-            
+            <Link href={mode === 'login' ? '/register' : '/login'} className="link-primary">
               {mode === 'login' ? 'Inscrivez-vous' : 'Connectez-vous'}
-            
+            </Link>
           </p>
         </div>
       </div>
